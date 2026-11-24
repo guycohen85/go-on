@@ -49,6 +49,7 @@ Contrast (checked, WCAG AA): ink on paper 11.8:1, ink on sky 10:1, ink-2 on pape
 - **Primary button:** `go` background, white text, 14px radius. One primary action per screen.
 - **Bottom nav:** fixed, 5 items, icon + label (13px, `text-tiny`, the only use of this size), current item `ink` and bold, honoring `safe-area-inset-bottom`.
 - **Help pill** in the header on every page: "צריך עזרה עכשיו?" → `/safety`.
+- **Menu** in the header, after the help pill: a hamburger icon button (44px, no visible label; `aria-label="תפריט"`). Opens a full-screen native `<dialog>` listing every page, grouped like the home page (8 needs, my tools, body & mind, then help, settings, sources, privacy, accessibility). Each item: its duotone icon in the topic's icon color + title, 44px rows with 1px `line` dividers; the current page is bold. Closes with the X button or Esc; the page behind does not scroll.
 - **Feedback** at the end of every topic and station: three pill buttons and an optional text field.
 
 ## RTL rules
