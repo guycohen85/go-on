@@ -1,0 +1,64 @@
+---
+// Renders one interactive tool named in a section's frontmatter (`tools:`).
+// Each tool is its own island, loaded only when it scrolls into view. Games that start from a
+// random state render only in the browser (client:only), so server and client never disagree.
+// `data` carries the tool's content from the Markdown file; each tool documents its own shape.
+import { getCollection } from 'astro:content';
+import WaterReference from './tools/WaterReference';
+import PerKgCalc from './tools/PerKgCalc';
+import OnsCalc from './tools/OnsCalc';
+import HealthCheck from './tools/HealthCheck';
+import Workout from './tools/Workout';
+import Steps from './tools/Steps';
+import ActivityTimer from './tools/ActivityTimer';
+import MoveReminder from './tools/MoveReminder';
+import ActivityIdea from './tools/ActivityIdea';
+import LogForm from './tools/LogForm';
+import MemoryPairs from './tools/MemoryPairs';
+import DigitSequence from './tools/DigitSequence';
+import Chunking from './tools/Chunking';
+import Reaction from './tools/Reaction';
+import Stroop from './tools/Stroop';
+import Sudoku from './tools/Sudoku';
+import Crossword from './tools/Crossword';
+import MeditationPlayer from './tools/MeditationPlayer';
+
+interface Props {
+  type: string;
+  data?: Record<string, unknown>;
+}
+
+const { type, data = {} } = Astro.props;
+// Tool data comes from validated content files; each tool receives the fields it expects.
+const d = data as any;
+
+const known = [
+  'water', 'per-kg', 'ons', 'health-check', 'workout', 'steps', 'activity-timer', 'move-reminder',
+  'activity-idea', 'log', 'memory-pairs', 'digit-sequence', 'chunking', 'reaction', 'stroop', 'sudoku',
+  'crossword', 'meditations',
+];
+if (!known.includes(type)) throw new Error(`Unknown tool type "${type}" in content`);
+
+const practices =
+  type === 'meditations'
+    ? (await getCollection('meditations')).sort((a, b) => a.data.order - b.data.order).map((m) => ({ id: m.id, ...m.data }))
+    : [];
+---
+{type === 'water' && <WaterReference client:visible options={d.options} />}
+{type === 'per-kg' && <PerKgCalc client:visible {...d} />}
+{type === 'ons' && <OnsCalc client:visible />}
+{type === 'health-check' && <HealthCheck client:visible {...d} />}
+{type === 'workout' && <Workout client:visible levels={d.levels} caution={d.caution} />}
+{type === 'steps' && <Steps client:visible />}
+{type === 'activity-timer' && <ActivityTimer client:visible kinds={d.kinds} />}
+{type === 'move-reminder' && <MoveReminder client:visible alert={d.alert} note={d.note} />}
+{type === 'activity-idea' && <ActivityIdea client:visible ideas={d.ideas} />}
+{type === 'log' && <LogForm client:visible id={d.id} fields={d.fields} />}
+{type === 'memory-pairs' && <MemoryPairs client:only="preact" />}
+{type === 'digit-sequence' && <DigitSequence client:visible />}
+{type === 'chunking' && <Chunking client:only="preact" groups={d.groups} note={d.note} />}
+{type === 'reaction' && <Reaction client:visible note={d.note} />}
+{type === 'stroop' && <Stroop client:only="preact" note={d.note} />}
+{type === 'sudoku' && <Sudoku client:only="preact" />}
+{type === 'crossword' && <Crossword client:visible clues={d.clues} />}
+{type === 'meditations' && <MeditationPlayer client:visible practices={practices} noVoiceText={d.noVoiceText} />}

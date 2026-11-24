@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Placeholder from '../../components/Placeholder.astro';
+import TopicPage from '../../components/TopicPage.astro';
 
 export async function getStaticPaths() {
   const items = await getCollection('bodyMind');
@@ -14,5 +14,5 @@ interface Props {
 const { item } = Astro.props;
 ---
 <Base title={item.data.title}>
-  <Placeholder title={item.data.title} milestone={2} />
+  <TopicPage topic={item.id} title={item.data.title} icon={item.data.icon} color={item.data.color} />
 </Base>
