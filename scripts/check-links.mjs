@@ -1,8 +1,9 @@
 // Checks that every internal href/src in dist/ points to a file that exists.
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const dist = new URL('../dist/', import.meta.url).pathname;
+const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 const files = [];
 (function walk(dir) {
   for (const name of readdirSync(dir)) {
@@ -15,7 +16,7 @@ const files = [];
 let broken = 0;
 for (const file of files) {
   const html = readFileSync(file, 'utf8');
-  for (const [, link] of html.matchAll(/(?:href|src)="(\/[^"#?]*)/g)) {
+  for (const [, link] of html.matchAll(/(?:href|src)="(\/(?!\/)[^"#?]*)/g)) {
     const target = join(dist, decodeURIComponent(link));
     const ok = existsSync(target) && (statSync(target).isFile() || existsSync(join(target, 'index.html')));
     if (!ok) {

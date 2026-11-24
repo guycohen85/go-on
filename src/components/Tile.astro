@@ -24,7 +24,7 @@ const colors: Record<TileColor, string> = {
 
 const sizes: Record<TileSize, string> = {
   md: 'size-12 rounded-tile text-icon-md',
-  app: 'size-15 rounded-app text-icon-app md:size-19 md:rounded-app-lg md:text-icon-app-lg',
+  app: 'aspect-square w-full max-w-15 rounded-app text-icon-app md:max-w-19 md:rounded-app-lg md:text-icon-app-lg',
 };
 ---
 <span class:list={['grid shrink-0 place-items-center', colors[color], sizes[size]]}>

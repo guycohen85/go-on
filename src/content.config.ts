@@ -39,4 +39,17 @@ const myTools = defineCollection({
   }),
 });
 
-export const collections = { needs, bodyMind, myTools };
+const section = z.object({ heading: z.string(), subtitle: z.string() });
+
+const home = defineCollection({
+  loader: file('src/content/home.json'),
+  schema: z.object({
+    title: z.string(),
+    lead: z.string(),
+    needs: section,
+    myTools: section,
+    bodyMind: section,
+  }),
+});
+
+export const collections = { home, needs, bodyMind, myTools };

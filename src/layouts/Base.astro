@@ -36,11 +36,11 @@ const fullTitle = title ? `${title} | GO ON` : 'GO ON: תמיכה, מידע וכ
     </main>
     <footer class="page mt-10 border-t border-line py-6 text-small text-ink-2">
       <p>המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי. כל מה שכתבת נשמר רק בטלפון הזה.</p>
-      <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-2 font-semibold">
-        <li><a href={url('/references')}>מקורות</a></li>
-        <li><a href={url('/privacy')}>פרטיות</a></li>
-        <li><a href={url('/accessibility')}>הצהרת נגישות</a></li>
-        <li><a href={url('/settings')}>גיבוי והגדרות</a></li>
+      <ul class="mt-2 flex flex-wrap gap-x-5 font-semibold">
+        <li><a class="inline-flex min-h-11 items-center" href={url('/references')}>מקורות</a></li>
+        <li><a class="inline-flex min-h-11 items-center" href={url('/privacy')}>פרטיות</a></li>
+        <li><a class="inline-flex min-h-11 items-center" href={url('/accessibility')}>הצהרת נגישות</a></li>
+        <li><a class="inline-flex min-h-11 items-center" href={url('/settings')}>גיבוי והגדרות</a></li>
       </ul>
     </footer>
     <BottomNav current={current} />

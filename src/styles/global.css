@@ -64,6 +64,7 @@
   --radius-pill: 999px;
 
   --container-page: 1080px;
+  --breakpoint-xs: 400px;
 }
 
 @layer base {
