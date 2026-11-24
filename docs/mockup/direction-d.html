@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO ON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  :root {
+    --night: #0e1336;
+    --night-2: #171d4a;
+    --text: #ffffff;
+    --text-2: #b9c0e8;
+    --line: rgba(255, 255, 255, .55);
+    --ink: #0e1336;
+    --go: #7fe08f;
+    --go-hover: #a3eeae;
+    --coral: #ff9a85;
+    --sun: #ffd166;
+    --sky: #7cc8ff;
+    --mint: #6fe3b8;
+    --serif: "Frank Ruhl Libre", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--night); color: var(--text);
+    font-family: Assistant, system-ui, sans-serif; font-size: 17px; line-height: 1.55;
+    padding-block-end: 110px;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin-inline: auto; padding-inline: 20px; }
+  h1, h2 { font-family: var(--serif); font-weight: 500; line-height: 1.12; margin: 0; }
+
+  /* header */
+  .top { display: flex; justify-content: space-between; align-items: center; padding-block: 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: 700 22px var(--serif); letter-spacing: .5px; }
+  .brand img { width: 40px; height: 40px; background: #fff; border-radius: 12px; padding: 3px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 15px;
+    border: 1.5px solid var(--line); border-radius: 999px; padding: 7px 16px; transition: background .2s, color .2s;
+  }
+  .pill:hover { background: #fff; color: var(--ink); }
+
+  /* sections: one idea per screen */
+  .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: center; padding-block: 36px; }
+  @media (min-width: 880px) {
+    .row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; min-height: min(78vh, 720px); padding-block: 56px; }
+    .row.flip > :first-child { order: 2; }
+  }
+  .eyebrow { color: var(--text-2); font-weight: 600; font-size: 16px; margin: 0 0 10px; }
+  .hero h1 { font-size: clamp(46px, 11vw, 92px); }
+  .lede { font-size: 20px; color: var(--text-2); margin: 16px 0 28px; max-width: 32ch; }
+  .row h2 { font-size: clamp(34px, 7vw, 56px); }
+
+  /* main action */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: space-between; gap: 28px;
+    background: var(--go); color: var(--ink); text-decoration: none; font-weight: 700; font-size: 19px;
+    border-radius: 999px; padding: 14px 18px 14px 22px; transition: background .2s;
+  }
+  .btn i { font-size: 22px; }
+  .btn:hover { background: var(--go-hover); }
+
+  /* code entry, as one pill */
+  .code { margin-block-start: 34px; max-width: 420px; }
+  .code label { display: block; font-weight: 600; margin-block-end: 10px; }
+  .code .field {
+    display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 6px 6px 6px;
+    padding-inline-start: 20px; transition: border-color .2s;
+  }
+  .code .field:focus-within { border-color: #fff; }
+  .code input {
+    flex: 1; min-width: 0; background: none; border: 0; outline: none; color: #fff;
+    font: 700 22px ui-monospace, monospace; letter-spacing: 8px;
+  }
+  .code input::placeholder { color: rgba(255,255,255,.45); }
+  .code button {
+    font: inherit; font-weight: 700; background: #fff; color: var(--ink); border: 0; border-radius: 999px;
+    padding: 10px 18px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .pid { font-size: 15px; color: var(--text-2); margin: 12px 0 0; }
+  .pid b { color: #fff; letter-spacing: 1px; }
+
+  /* station ring */
+  .ring { width: min(100%, 440px); margin-inline: auto; display: block; }
+  .ring .n { font: 700 104px var(--serif); fill: var(--ink); }
+  .ring .s { font: 600 19px Assistant, sans-serif; fill: var(--ink); }
+  .legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--text-2); margin: 10px 0 0; padding: 0; list-style: none; }
+  .legend span { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-inline-end: 6px; vertical-align: -1px; }
+
+  /* needs cluster */
+  .cluster { list-style: none; padding: 0; margin: 0 auto; width: min(100%, 470px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .cluster li:nth-child(3n+2) { transform: translateY(18px); }
+  .cluster a, .cluster .core {
+    aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; text-align: center; text-decoration: none;
+    color: var(--ink); font: 700 clamp(15px, 3.9vw, 19px)/1.15 var(--serif); padding: 12%;
+    transition: transform .2s;
+  }
+  .cluster a:hover { transform: scale(1.06); }
+  .cluster .core { background: #fff; font-size: clamp(16px, 4.2vw, 21px); }
+  .cluster .core small { display: block; font: 600 13px Assistant, sans-serif; color: #4b5689; margin-block-start: 4px; }
+  .coral { background: var(--coral); } .sun { background: var(--sun); } .sky { background: var(--sky); } .mint { background: var(--mint); }
+
+  /* tools */
+  .tools { padding-block: 40px 20px; text-align: center; }
+  .tools h2 { font-size: clamp(34px, 7vw, 56px); }
+  .tools .lede { margin-inline: auto; }
+  .chips { list-style: none; padding: 0; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; max-width: 760px; }
+  .chips a {
+    display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; font-size: 17px;
+    border: 1.5px solid var(--line); border-radius: 999px; padding: 10px 20px 10px 16px; transition: background .2s, color .2s;
+  }
+  .chips a:hover { background: #fff; color: var(--ink); }
+  .chips i { font-size: 24px; }
+  .chips small { color: inherit; opacity: .7; font-weight: 400; }
+
+  .note { text-align: center; font-size: 15px; color: var(--text-2); padding-block: 40px 0; max-width: 46ch; margin-inline: auto; }
+
+  /* bottom nav */
+  nav.bottom {
+    position: fixed; inset-inline: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    max-width: 560px; margin-inline: auto; background: var(--night-2); border: 1px solid rgba(255,255,255,.14);
+    border-radius: 999px; display: flex; justify-content: space-around; padding-block: 8px;
+  }
+  nav.bottom a { display: flex; flex-direction: column; align-items: center; font-size: 13px; text-decoration: none; color: var(--text-2); min-width: 54px; }
+  nav.bottom i { font-size: 24px; }
+  nav.bottom a[aria-current] { color: #fff; font-weight: 700; }
+
+  a:focus-visible, button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="brand" href="#"><img src="../../assets/logo/go-on-mark.svg" alt="">GO ON</a>
+  <a class="pill" href="#"><i class="ph-bold ph-lifebuoy" aria-hidden="true"></i>צריך עזרה עכשיו?</a>
+</header>
+
+<main>
+  <!-- 1. where I am -->
+  <section class="wrap row hero" aria-labelledby="hero-h">
+    <div>
+      <p class="eyebrow">התחנה שלך היום</p>
+      <h1 id="hero-h">יעד קטן<br>בדרך</h1>
+      <p class="lede">לבחור צעד אחד שאפשר לעשות השבוע, בקצב שלך.</p>
+      <a class="btn" href="#">להמשיך בתחנה 3 <i class="ph-bold ph-arrow-left" aria-hidden="true"></i></a>
+
+      <form class="code" onsubmit="return false">
+        <label for="code">קיבלת קוד מהמלווה לתחנה 4?</label>
+        <div class="field">
+          <input id="code" inputmode="numeric" maxlength="4" placeholder="····" autocomplete="off">
+          <button type="submit">פתיחה <i class="ph-bold ph-arrow-left" aria-hidden="true"></i></button>
+        </div>
+        <p class="pid">מספר המשתתף שלך: <b>K7M‑4QP</b>. המלווה צריך אותו כדי לתת קוד.</p>
+      </form>
+    </div>
+
+    <div>
+      <svg class="ring" viewBox="0 0 320 320" role="img" aria-label="ההתקדמות שלך: תחנות 1 ו־2 הושלמו, את/ה בתחנה 3 מתוך 12">
+        <circle cx="160" cy="160" r="108" fill="var(--sun)"/>
+        <text class="s" x="160" y="112" text-anchor="middle">תחנה</text>
+        <text class="n" x="160" y="196" text-anchor="middle">3</text>
+        <text class="s" x="160" y="226" text-anchor="middle">מתוך 12</text>
+        <g id="dots"></g>
+      </svg>
+      <ul class="legend" aria-hidden="true">
+        <li><span style="background:var(--mint)"></span>הושלמה</li>
+        <li><span style="background:#fff"></span>עכשיו</li>
+        <li><span style="border:1.5px solid var(--line)"></span>עוד לפנינו</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2. the 8 needs -->
+  <section class="wrap row flip" aria-labelledby="needs-h">
+    <div>
+      <p class="eyebrow">8 הצרכים של צעירים שמתמודדים עם סרטן ומחלימים</p>
+      <h2 id="needs-h">מה מעסיק<br>אותך עכשיו?</h2>
+      <p class="lede">בוחרים נושא ומקבלים ידע, שאלות לצוות וכתובות שאפשר לפנות אליהן.</p>
+    </div>
+    <ul class="cluster">
+      <li><a class="mint" href="#">פוריות</a></li>
+      <li><a class="coral" href="#">זוגיות ומיניות</a></li>
+      <li><a class="sky" href="#">עבודה ולימודים</a></li>
+      <li><a class="sun" href="#">זכויות</a></li>
+      <li aria-hidden="true"><div class="core">8 נושאים<small>לבחור אחד</small></div></li>
+      <li><a class="coral" href="#">הורות</a></li>
+      <li><a class="mint" href="#">בדידות ושייכות</a></li>
+      <li><a class="sun" href="#">היום שאחרי</a></li>
+      <li><a class="sky" href="#">רפואה מותאמת גיל</a></li>
+    </ul>
+  </section>
+
+  <!-- 3. a minute for you -->
+  <section class="wrap tools" aria-labelledby="tools-h">
+    <p class="eyebrow">תרגול קצר לגוף ולראש</p>
+    <h2 id="tools-h">דקה בשבילך</h2>
+    <p class="lede">לא צריך להתכונן. בוחרים אחד ומתחילים.</p>
+    <ul class="chips">
+      <li><a href="#"><i class="ph ph-flower-lotus" aria-hidden="true"></i>נשימה מרגיעה <small>3 דק׳</small></a></li>
+      <li><a href="#"><i class="ph ph-person-simple-walk" aria-hidden="true"></i>הליכה קלה <small>10 דק׳</small></a></li>
+      <li><a href="#"><i class="ph ph-drop" aria-hidden="true"></i>כמה לשתות היום?</a></li>
+      <li><a href="#"><i class="ph ph-brain" aria-hidden="true"></i>משחק זיכרון <small>5 דק׳</small></a></li>
+      <li><a href="#"><i class="ph ph-barbell" aria-hidden="true"></i>קימה מכיסא <small>2 דק׳</small></a></li>
+    </ul>
+  </section>
+
+  <p class="wrap note">כל מה שכתבת נשמר רק בטלפון הזה. המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי.</p>
+</main>
+
+<nav class="bottom" aria-label="ניווט ראשי">
+  <a href="#" aria-current="page"><i class="ph-fill ph-house" aria-hidden="true"></i>בית</a>
+  <a href="#"><i class="ph ph-path" aria-hidden="true"></i>התהליך</a>
+  <a href="#"><i class="ph ph-notebook" aria-hidden="true"></i>היומן</a>
+  <a href="#"><i class="ph ph-toolbox" aria-hidden="true"></i>כלים</a>
+  <a href="#"><i class="ph ph-chart-line-up" aria-hidden="true"></i>מעקב</a>
+</nav>
+
+<script>
+  // 12 stations around the sun, starting at the top and going counter-clockwise (forward in RTL).
+  (function () {
+    const ns = 'http://www.w3.org/2000/svg';
+    const g = document.getElementById('dots');
+    const current = 3;
+    for (let i = 1; i <= 12; i++) {
+      const a = -(i - 1) / 12 * 2 * Math.PI - Math.PI / 2;
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('cx', 160 + 140 * Math.cos(a));
+      c.setAttribute('cy', 160 + 140 * Math.sin(a));
+      if (i < current) { c.setAttribute('r', 10); c.setAttribute('fill', '#6fe3b8'); }
+      else if (i === current) { c.setAttribute('r', 15); c.setAttribute('fill', '#fff'); }
+      else { c.setAttribute('r', 9); c.setAttribute('fill', 'none'); c.setAttribute('stroke', 'rgba(255,255,255,.55)'); c.setAttribute('stroke-width', 2); }
+      g.appendChild(c);
+    }
+  })();
+</script>
+</body>
+</html>
