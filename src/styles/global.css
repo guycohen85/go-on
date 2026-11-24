@@ -77,12 +77,18 @@
     color: var(--color-ink);
     background: var(--color-paper);
   }
-  :focus-visible { outline: 3px solid var(--color-ink); outline-offset: 3px; }
+  /* Focus ring for keyboard users only. Browsers also mark some elements as focus-visible after
+     a tap or click (summary, dialog buttons, links on some phones), so the ring is hidden while the
+     last interaction was a pointer (data-input, set in Base.astro). Text fields show focus with their border. */
+  :focus-visible { outline: none; }
+  html:not([data-input='pointer']) :focus-visible { outline: 3px solid var(--color-ink); outline-offset: 3px; }
+  /* <main> takes focus only as the skip-link target (tabindex=-1) or when tapping empty space: never a ring. */
+  html #main:focus { outline: none; }
   /* No tap flash on phones. */
   * { -webkit-tap-highlight-color: transparent; }
   /* Section headers (accordion): never a frame. Keyboard users get a soft background
      instead (browsers also mark <summary> as focus-visible after a click, hence data-input). */
-  summary:focus, summary:focus-visible { outline: none; }
+  summary:focus, html:not([data-input='pointer']) summary:focus-visible { outline: none; }
   html[data-input='keyboard'] summary:focus-visible { background: var(--color-sky); border-radius: var(--radius-card); }
   /* The page behind the open menu does not scroll. */
   html:has(dialog[open]) { overflow: hidden; }
@@ -109,6 +115,9 @@
   .prose-go li::marker { color: var(--color-ink-2); }
   .prose-go a { font-weight: 600; text-decoration: underline; text-underline-offset: 0.2em; }
   .prose-go strong { font-weight: 700; }
+
+  /* A wrapper that shows the focus ring when the hidden input inside it has keyboard focus. */
+  html:not([data-input='pointer']) .focus-within-ring:has(:focus-visible) { outline: 3px solid var(--color-ink); outline-offset: 3px; }
 
   /* A small moment of joy when a station is marked done: the check grows in (CSS transition only). */
   .done-badge { transition: transform 150ms ease-out, opacity 150ms ease-out; }

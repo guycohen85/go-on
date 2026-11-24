@@ -44,7 +44,7 @@ export default function Checklist({ id, items }: Props) {
                   return (
                     <label
                       key={status}
-                      class={`inline-flex min-h-11 cursor-pointer items-center rounded-pill border-2 px-3.5 text-small font-semibold transition-colors has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-ink ${
+                      class={`inline-flex min-h-11 cursor-pointer items-center rounded-pill border-2 px-3.5 text-small font-semibold transition-colors focus-within-ring ${
                         checked ? 'border-ink bg-ink text-white' : 'border-line bg-paper text-ink hover:border-ink'
                       }`}
                     >
