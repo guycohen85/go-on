@@ -38,8 +38,8 @@ Contrast (checked, WCAG AA): ink on paper 11.8:1, ink on sky 10:1, ink-2 on pape
 
 ## Components
 - **Intro band:** `sky` background, h1 + one lead sentence. No illustration.
-- **Need row:** icon tile 48px + title (Fredoka 500, 22px) + one-line description; 1px `line` divider; 2 columns from 760px.
-- **Tool card (הכלים שלי):** 2px border, tile + title + one line; 2 columns on mobile, 4 from 760px.
+- **Need row:** icon tile 48px + title (Fredoka 500, 22px) + one-line description; 1px `line` divider; 2 columns from 768px.
+- **Tool card (הכלים שלי):** 2px border, tile + title + one line; 2 columns on mobile, 4 from 768px.
 - **App grid (גוף ונפש):** 5 equal columns at every width, tile above a centered label.
 - **Primary button:** `go` background, white text, 14px radius. One primary action per screen.
 - **Bottom nav:** fixed, 5 items, icon + label, current item `ink` and bold, honoring `safe-area-inset-bottom`.

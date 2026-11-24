@@ -1,0 +1,32 @@
+---
+// A pastel tile with an icon in a deeper shade of the same hue (DESIGN.md: icon tiles).
+import Icon from './Icon.astro';
+
+export type TileColor = 'green' | 'pink' | 'blue' | 'yellow' | 'orange' | 'purple';
+export type TileSize = 'md' | 'app';
+
+interface Props {
+  icon: string;
+  color: TileColor;
+  size?: TileSize;
+}
+
+const { icon, color, size = 'md' } = Astro.props;
+
+const colors: Record<TileColor, string> = {
+  green: 'bg-t-green text-i-green',
+  pink: 'bg-t-pink text-i-pink',
+  blue: 'bg-t-blue text-i-blue',
+  yellow: 'bg-t-yellow text-i-yellow',
+  orange: 'bg-t-orange text-i-orange',
+  purple: 'bg-t-purple text-i-purple',
+};
+
+const sizes: Record<TileSize, string> = {
+  md: 'size-12 rounded-tile text-icon-md',
+  app: 'size-15 rounded-app text-icon-app md:size-19 md:rounded-app-lg md:text-icon-app-lg',
+};
+---
+<span class:list={['grid shrink-0 place-items-center', colors[color], sizes[size]]}>
+  <Icon name={icon} weight="duotone" />
+</span>
