@@ -108,6 +108,10 @@
   .prose-go a { font-weight: 600; text-decoration: underline; text-underline-offset: 0.2em; }
   .prose-go strong { font-weight: 700; }
 
+  /* A small moment of joy when a station is marked done: the check grows in (CSS transition only). */
+  .done-badge { transition: transform 150ms ease-out, opacity 150ms ease-out; }
+  @starting-style { .done-badge { transform: scale(0.5); opacity: 0; } }
+
   /* Marks client-draft text so it is visible until the client approves it */
   .draft {
     display: inline-block; font-size: var(--text-small); font-weight: 700; color: var(--color-ink);

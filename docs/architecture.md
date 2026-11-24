@@ -6,7 +6,8 @@ Version 1 has no companion flow (no unlock codes, no companion area, no particip
 ## Stack
 - Astro 7 (static output) + Tailwind CSS 4 + TypeScript
 - Preact islands for interactive parts (station worksheets, diary, tools, calculators, tracking, feedback)
-- Content in Markdown via Astro content collections (`src/content/`), separated from code so a CMS (Keystatic) can be added later. Topic pages: one folder per topic in `src/content/topics/<topic>/`, one Markdown file per section; a section's frontmatter can add a worksheet, a status checklist, resource cards or internal links
+- Content in Markdown via Astro content collections (`src/content/`), separated from code so a CMS (Keystatic) can be added later. Topic pages: one folder per topic in `src/content/topics/<topic>/`, one Markdown file per section; a section's frontmatter can add a worksheet, a status checklist, resource cards, internal links or tools
+- "חוזרים לחיים": hub texts and baseline domains in `src/content/back-to-life.json`; stations in `src/content/stations/<nn>.md` (frontmatter only); intro, before, baseline and appendix are topic folders `src/content/topics/back-to-life-<part>/`
 - PWA: `@vite-pwa/astro` 2.x (Workbox precache of all pages and assets; works offline after first load)
 - Hosting: Cloudflare Workers with static assets, account in the client's name. Until then, previews on GitHub Pages
 - Fonts self-hosted via Fontsource (Fredoka 500/600, Assistant 400/600/700); icons: Phosphor duotone/regular, inlined as SVG at build time
@@ -33,8 +34,11 @@ Version 1 has no companion flow (no unlock codes, no companion area, no particip
 Bottom navigation: בית, חוזרים לחיים, היומן, כלים, מעקב.
 
 ## Data on the device
-- Storage: IndexedDB (`idb-keyval`), one key per area: `progress`, `stations/<n>`, `baseline`, `tracking`, `tools/*`, `diary` (encrypted blob), `feedbackQueue`.
-- Progress: each station has a "סיימתי" button; the hub shows which stations are done. Nothing is locked.
+- Storage: IndexedDB (`idb-keyval`), one key per area: `progress`, `baseline`, `worksheet:<id>`, `checklist:<id>`, `log:<id>`, `diary` (encrypted blob), `feedbackQueue`.
+- Progress (`progress`): station number → ISO date it was marked done. Each station has a "סיימתי" button and a way to undo it; the hub shows which stations are done and links to the next undone one. Nothing is locked.
+- Station worksheets: `worksheet:station-<n>`, one field per question, keyed by the field id in the station file (keep ids stable).
+- Baseline (`baseline`): `{ start, again }`, each a map of domain text → 0 to 10. `again` is the re-rating in station 11, shown next to `start`.
+- Logs (`log:<id>`): append-only lists (activity, brain training, between stations), shown on the tracking page.
 - Diary: AES-GCM via Web Crypto, key derived from the personal code with PBKDF2. Auto-lock after 5 minutes of inactivity. A forgotten code cannot be recovered (stated clearly in the UI).
 - Backup: export everything to a JSON file (diary stays encrypted inside it); import restores it. Persistent storage requested via `navigator.storage.persist()`.
 - A visible notice wherever the user writes: saved only on this device.

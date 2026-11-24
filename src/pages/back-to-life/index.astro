@@ -1,0 +1,138 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Tile from '../../components/Tile.astro';
+import Icon from '../../components/Icon.astro';
+import { url } from '../../lib/url';
+
+const hub = (await getEntry('backToLife', 'hub'))!.data;
+const stations = (await getCollection('stations')).sort((a, b) => a.data.n - b.data.n);
+const total = stations.length;
+const first = stations[0]!.data;
+const primary =
+  'inline-flex min-h-11 items-center justify-center rounded-tile bg-go px-6 font-bold text-white no-underline transition-colors hover:bg-go-hover';
+const rowLink = 'group flex items-center gap-3.5 border-b border-line py-3 no-underline';
+---
+<Base title={hub.title} description={hub.summary} current="back-to-life">
+  <div slot="intro" class="bg-sky">
+    <div class="page pt-8 pb-8">
+      <div class="flex items-center gap-3.5">
+        <Tile icon="path" color="green" />
+        <div>
+          <h1 class="font-display text-h2 font-semibold">{hub.title}</h1>
+          <p class="text-ink-2">{hub.summary}</p>
+        </div>
+      </div>
+      <p class="mt-4 max-w-[40ch] text-lead">{hub.lead}</p>
+
+      <div class="mt-5 max-w-md" data-progress>
+        <p class="font-semibold" data-progress-text>סיימת 0 מתוך {total} תחנות</p>
+        <div class="mt-2 h-2 overflow-hidden rounded-pill bg-paper" aria-hidden="true">
+          <div class="h-full rounded-pill bg-ink transition-[width]" style="width: 0%" data-progress-bar></div>
+        </div>
+        <a href={url(`/back-to-life/station/${first.n}`)} class:list={[primary, 'mt-4']} data-continue>
+          להתחיל בתחנה {first.n}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <section class="page pt-10" aria-labelledby="start-h">
+    <h2 id="start-h" class="font-display text-h2 font-semibold">{hub.start.heading}</h2>
+    <ul class="mt-3">
+      {
+        hub.start.items.map((item) => (
+          <li>
+            <a href={url(item.href)} class={rowLink}>
+              <Tile icon={item.icon} color={item.color} />
+              <span>
+                <span class="block font-display text-title font-medium transition-colors group-hover:text-go">{item.title}</span>
+                <span class="block text-small text-ink-2">{item.summary}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="page pt-10" aria-labelledby="stations-h">
+    <h2 id="stations-h" class="font-display text-h2 font-semibold">{hub.stations.heading}</h2>
+    <p class="mt-1.5 text-ink-2">{hub.stations.subtitle}</p>
+    {hub.noteDraft && <p class="draft mt-3">{hub.noteDraft}</p>}
+    <p class="mt-1.5 mb-3 max-w-prose">{hub.note}</p>
+    <ol class="md:columns-2 md:gap-12">
+      {
+        stations.map(({ data: s }) => (
+          <li class="group break-inside-avoid" data-station={s.n} data-title={s.title}>
+            <a href={url(`/back-to-life/station/${s.n}`)} class={rowLink}>
+              <span class="grid size-12 shrink-0 place-items-center rounded-pill border-2 border-line font-display text-card font-medium transition-colors group-data-[done]:border-ink group-data-[done]:bg-ink group-data-[done]:text-white">
+                <span class="group-data-[done]:hidden">{s.n}</span>
+                <span class="hidden text-icon group-data-[done]:grid">
+                  <Icon name="check" weight="bold" />
+                </span>
+              </span>
+              <span>
+                <span class="block font-display text-title font-medium transition-colors group-hover:text-go">
+                  <span class="sr-only">תחנה {s.n}: </span>
+                  {s.title}
+                  <span class="sr-only hidden group-data-[done]:inline">(הושלמה)</span>
+                </span>
+                <span class="block text-small text-ink-2">{s.goal}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="page pt-10" aria-labelledby="more-h">
+    <h2 id="more-h" class="font-display text-h2 font-semibold">{hub.more.heading}</h2>
+    <ul class="mt-3">
+      {
+        hub.more.items.map((item) => (
+          <li>
+            <a href={url(item.href)} class={rowLink}>
+              <Tile icon={item.icon} color={item.color} />
+              <span>
+                <span class="block font-display text-title font-medium transition-colors group-hover:text-go">{item.title}</span>
+                <span class="block text-small text-ink-2">{item.summary}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<script>
+  // Show which stations are done (saved on this device) and where to continue.
+  import { loadProgress, nextStation, doneCount, type Progress } from '../../lib/progress';
+  import { url } from '../../lib/url';
+
+  const rows = [...document.querySelectorAll<HTMLElement>('[data-station]')];
+  const total = rows.length;
+  const text = document.querySelector<HTMLElement>('[data-progress-text]')!;
+  const bar = document.querySelector<HTMLElement>('[data-progress-bar]')!;
+  const go = document.querySelector<HTMLAnchorElement>('[data-continue]')!;
+
+  function show(progress: Progress) {
+    for (const row of rows) row.toggleAttribute('data-done', Boolean(progress[row.dataset.station!]));
+    const count = doneCount(progress, total);
+    const next = nextStation(progress, total);
+    text.textContent = count === total ? `סיימת את כל ${total} התחנות` : `סיימת ${count} מתוך ${total} תחנות`;
+    bar.style.width = `${(count / total) * 100}%`;
+    if (next === null) {
+      go.href = url('/back-to-life/appendix');
+      go.textContent = 'לכלים ולנספחים';
+    } else {
+      const title = rows.find((r) => r.dataset.station === String(next))?.dataset.title ?? '';
+      go.href = url(`/back-to-life/station/${next}`);
+      go.textContent = count === 0 ? `להתחיל בתחנה ${next}` : `להמשיך לתחנה ${next}: ${title}`;
+    }
+  }
+
+  void loadProgress(show).then(show);
+</script>

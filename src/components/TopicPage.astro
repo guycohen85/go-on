@@ -18,9 +18,11 @@ interface Props {
   icon?: string;
   color?: TileColor;
   feedback?: boolean;
+  /** A link back to the parent page, shown above the title. */
+  back?: { href: string; label: string };
 }
 
-const { topic, title, summary, icon, color = 'blue', feedback = true } = Astro.props;
+const { topic, title, summary, icon, color = 'blue', feedback = true, back } = Astro.props;
 
 const all = (await getCollection('sections', (s) => s.id.startsWith(`${topic}/`))).sort((a, b) =>
   a.id.localeCompare(b.id),
@@ -35,6 +37,14 @@ const slug = (id: string) => id.split('/')[1]!.replace(/^\d+-/, '');
 const draftLabel = (draft: boolean | string) => (typeof draft === 'string' ? draft : '[טיוטה מהאפיון – לבדיקה]');
 ---
 <article class="page pt-6">
+  {
+    back && (
+      <a href={url(back.href)} class="-mt-2 mb-3 inline-flex min-h-11 items-center gap-1.5 text-small font-semibold text-ink-2 no-underline hover:text-ink">
+        <Icon name="arrow-right" weight="bold" />
+        {back.label}
+      </a>
+    )
+  }
   <header class="flex items-center gap-3.5">
     {icon && <Tile icon={icon} color={color} />}
     <div>
