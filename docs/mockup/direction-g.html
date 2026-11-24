@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO ON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  :root {
+    --ink: #1b2a8f;
+    --ink-2: #4b5689;
+    --paper: #ffffff;
+    --sky: #dceefb;
+    --line: #d6e3ef;
+    --go: #2e7d3a;
+    /* icon tiles: pastel background + a deeper icon in the same hue */
+    --t-green: #e3f6df;  --i-green: #2e7d3a;
+    --t-pink: #fde3ea;   --i-pink: #c2335f;
+    --t-blue: #e2ecfd;   --i-blue: #2b55c7;
+    --t-yellow: #fff1cc; --i-yellow: #a86a00;
+    --t-orange: #ffe6d5; --i-orange: #c4520f;
+    --t-purple: #eee6fb; --i-purple: #6a3fc0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Assistant, system-ui, sans-serif; font-size: 17px; line-height: 1.55;
+    padding-block-end: 84px;
+  }
+  .display { font-family: Fredoka, Assistant, sans-serif; font-weight: 600; line-height: 1.08; }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin-inline: auto; padding-inline: 20px; }
+
+  .top { display: flex; justify-content: space-between; align-items: center; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 22px; }
+  .brand img { width: 38px; height: 38px; }
+  .help { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; text-decoration: none; background: var(--sky); border-radius: 999px; padding: 7px 14px; }
+
+  /* opening (from A), in B's type */
+  .intro { background: var(--sky); }
+  .intro .wrap { padding-block: 34px 38px; }
+  .intro h1 { font-size: clamp(34px, 7.4vw, 64px); margin: 0; max-width: 17ch; letter-spacing: -.3px; }
+  .intro p { margin: 14px 0 0; font-size: 19px; max-width: 40ch; }
+
+  /* icon tiles (from C) */
+  .tile { flex: none; width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 28px; }
+  .green { background: var(--t-green); color: var(--i-green); }
+  .pink { background: var(--t-pink); color: var(--i-pink); }
+  .blue { background: var(--t-blue); color: var(--i-blue); }
+  .yellow { background: var(--t-yellow); color: var(--i-yellow); }
+  .orange { background: var(--t-orange); color: var(--i-orange); }
+  .purple { background: var(--t-purple); color: var(--i-purple); }
+
+  section h2 { font-size: 30px; margin: 0 0 6px; }
+  section .sub { margin: 0 0 18px; color: var(--ink-2); }
+
+  /* needs: typographic index (from B) with colored tiles */
+  .needs { padding-block: 40px 8px; }
+  .needs ul { list-style: none; padding: 0; margin: 0; columns: 1; }
+  @media (min-width: 760px) { .needs ul { columns: 2; column-gap: 48px; } }
+  .needs li { break-inside: avoid; }
+  .needs a { display: flex; gap: 14px; align-items: center; text-decoration: none; padding-block: 12px; border-bottom: 1px solid var(--line); }
+  .needs b { font-family: Fredoka, Assistant, sans-serif; font-weight: 500; font-size: 22px; display: block; line-height: 1.25; }
+  .needs span.d { color: var(--ink-2); font-size: 15px; }
+  .needs a:hover b { color: var(--go); }
+
+  /* my tools: the 12-station process lives here, as "חוזרים לחיים" */
+  .mine { padding-block: 40px 8px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (min-width: 760px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .grid a {
+    text-decoration: none; border: 2px solid var(--line); border-radius: 18px; padding: 16px;
+    display: flex; flex-direction: column; gap: 10px; transition: border-color .15s;
+  }
+  .grid a:hover { border-color: var(--ink); }
+  .grid b { font-family: Fredoka, Assistant, sans-serif; font-weight: 500; font-size: 20px; line-height: 1.2; }
+  .grid span.d { font-size: 14px; color: var(--ink-2); }
+
+  .bm { padding-block: 40px 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chips a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; border: 2px solid var(--line); border-radius: 16px; padding: 6px 14px 6px 8px; }
+  .chips a:hover { border-color: var(--ink); }
+  .chips .tile { width: 38px; height: 38px; font-size: 22px; border-radius: 11px; }
+
+  .note { font-size: 14px; color: var(--ink-2); padding-block: 30px 8px; }
+
+  nav.bottom {
+    position: fixed; inset-inline: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  nav.bottom a { display: flex; flex-direction: column; align-items: center; font-size: 13px; text-decoration: none; color: var(--ink-2); min-width: 60px; }
+  nav.bottom i { font-size: 24px; }
+  nav.bottom a[aria-current] { color: var(--ink); font-weight: 700; }
+  a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="brand display" href="#"><img src="../../assets/logo/go-on-mark.svg" alt="">GO ON</a>
+  <a class="help" href="#"><i class="ph-bold ph-lifebuoy" aria-hidden="true"></i>צריך עזרה עכשיו?</a>
+</header>
+
+<div class="intro">
+  <div class="wrap">
+    <h1 class="display">תמיכה, מידע וכלים לצעירים בני 18 עד 44 שמתמודדים עם סרטן</h1>
+    <p>להמשיך קדימה, בדרך שלך. מהאבחנה ועד החזרה לעבודה, ללימודים ולשגרה.</p>
+  </div>
+</div>
+
+<main>
+  <section class="wrap needs" aria-labelledby="needs-h">
+    <h2 class="display" id="needs-h">מה מעסיק אותך עכשיו?</h2>
+    <p class="sub">8 הצרכים של צעירים שמתמודדים עם סרטן ומחלימים</p>
+    <ul>
+      <li><a href="#"><span class="tile green"><i class="ph-duotone ph-plant" aria-hidden="true"></i></span><div><b>פוריות ושימור פוריות</b><span class="d">שאלות לצוות ותכנון סביב הטיפול</span></div></a></li>
+      <li><a href="#"><span class="tile pink"><i class="ph-duotone ph-heart" aria-hidden="true"></i></span><div><b>זוגיות, אינטימיות ומיניות</b><span class="d">דימוי גוף, שיח זוגי ודייטינג</span></div></a></li>
+      <li><a href="#"><span class="tile blue"><i class="ph-duotone ph-briefcase" aria-hidden="true"></i></span><div><b>עבודה ולימודים</b><span class="d">חזרה הדרגתית, בקצב שמתאים לגוף</span></div></a></li>
+      <li><a href="#"><span class="tile yellow"><i class="ph-duotone ph-scales" aria-hidden="true"></i></span><div><b>זכויות ובירוקרטיה</b><span class="d">ביטוח לאומי, ועדות ואובדן כושר</span></div></a></li>
+      <li><a href="#"><span class="tile orange"><i class="ph-duotone ph-baby" aria-hidden="true"></i></span><div><b>הורות לצד המחלה</b><span class="d">איך מדברים עם ילדים</span></div></a></li>
+      <li><a href="#"><span class="tile purple"><i class="ph-duotone ph-hand-heart" aria-hidden="true"></i></span><div><b>בדידות ושייכות</b><span class="d">מעגל תמיכה ובקשת עזרה</span></div></a></li>
+      <li><a href="#"><span class="tile yellow"><i class="ph-duotone ph-sun-horizon" aria-hidden="true"></i></span><div><b>היום שאחרי</b><span class="d">שגרה חדשה ועתיד</span></div></a></li>
+      <li><a href="#"><span class="tile blue"><i class="ph-duotone ph-stethoscope" aria-hidden="true"></i></span><div><b>רפואה מותאמת גיל</b><span class="d">שאלות לצוות וייעוץ גנטי</span></div></a></li>
+    </ul>
+  </section>
+
+  <section class="wrap mine" aria-labelledby="mine-h">
+    <h2 class="display" id="mine-h">הכלים שלי</h2>
+    <p class="sub">מה שכתבת כאן נשמר רק בטלפון שלך</p>
+    <div class="grid">
+      <a href="#"><span class="tile green"><i class="ph-duotone ph-path" aria-hidden="true"></i></span><div><b>חוזרים לחיים</b><br><span class="d">תהליך אישי ב‑12 תחנות</span></div></a>
+      <a href="#"><span class="tile purple"><i class="ph-duotone ph-notebook" aria-hidden="true"></i></span><div><b>היומן שלי</b><br><span class="d">נעול בקוד אישי</span></div></a>
+      <a href="#"><span class="tile orange"><i class="ph-duotone ph-toolbox" aria-hidden="true"></i></span><div><b>ערכת כלים</b><br><span class="d">לימים מורכבים</span></div></a>
+      <a href="#"><span class="tile blue"><i class="ph-duotone ph-chart-line-up" aria-hidden="true"></i></span><div><b>מעקב</b><br><span class="d">אנרגיה, שינה ומצב רוח</span></div></a>
+    </div>
+  </section>
+
+  <section class="wrap bm" aria-labelledby="bm-h">
+    <h2 class="display" id="bm-h">גוף ונפש</h2>
+    <p class="sub">כלים לזמן הטיפול ולאחריו</p>
+    <div class="chips">
+      <a href="#"><span class="tile green"><i class="ph-duotone ph-bowl-food" aria-hidden="true"></i></span>תזונה</a>
+      <a href="#"><span class="tile blue"><i class="ph-duotone ph-barbell" aria-hidden="true"></i></span>פיזיותרפיה</a>
+      <a href="#"><span class="tile orange"><i class="ph-duotone ph-person-simple-walk" aria-hidden="true"></i></span>פעילות מתונה</a>
+      <a href="#"><span class="tile purple"><i class="ph-duotone ph-flower-lotus" aria-hidden="true"></i></span>מיינדפולנס</a>
+      <a href="#"><span class="tile pink"><i class="ph-duotone ph-brain" aria-hidden="true"></i></span>אימון קוגניטיבי</a>
+    </div>
+  </section>
+
+  <p class="wrap note">המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי.</p>
+</main>
+
+<nav class="bottom" aria-label="ניווט ראשי">
+  <a href="#" aria-current="page"><i class="ph-fill ph-house" aria-hidden="true"></i>בית</a>
+  <a href="#"><i class="ph ph-path" aria-hidden="true"></i>חוזרים לחיים</a>
+  <a href="#"><i class="ph ph-notebook" aria-hidden="true"></i>היומן</a>
+  <a href="#"><i class="ph ph-toolbox" aria-hidden="true"></i>כלים</a>
+  <a href="#"><i class="ph ph-chart-line-up" aria-hidden="true"></i>מעקב</a>
+</nav>
+</body>
+</html>
