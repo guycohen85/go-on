@@ -3,10 +3,11 @@ import { label, input, secondary, note, shuffle } from './ui';
 
 interface Props {
   groups: { name: string; items: string[] }[];
+  note: string;
 }
 
 /** Chunking strategy: group mixed items into meaningful categories. */
-export default function Chunking({ groups }: Props) {
+export default function Chunking({ groups, note: noteText }: Props) {
   const pick = () => {
     const chosen = shuffle(groups).slice(0, 3);
     return { chosen, items: shuffle(chosen.flatMap((g) => g.items)) };
@@ -32,7 +33,7 @@ export default function Chunking({ groups }: Props) {
           </ul>
         )}
       </div>
-      <p class={note}>אין קיבוץ אחד נכון. העיקר הוא למצוא קבוצות שמשמעותיות לך.</p>
+      <p class={note}>{noteText}</p>
     </div>
   );
 }

@@ -16,7 +16,7 @@ const make = () => {
 };
 
 /** Colour or word? Response inhibition: choose the ink colour, not the written word. */
-export default function Stroop() {
+export default function Stroop({ note: noteText }: { note: string }) {
   const [card, setCard] = useState(make);
   const [score, setScore] = useState({ right: 0, total: 0 });
   const [last, setLast] = useState<boolean | null>(null);
@@ -42,7 +42,7 @@ export default function Stroop() {
         {last !== null && (last ? 'נכון ✓ ' : 'לא הפעם. ')}
         {score.total > 0 && `נכון: ${score.right} מתוך ${score.total}`}
       </p>
-      <p class={note}>בחרו את צבע האותיות, לא את המילה.</p>
+      <p class={note}>{noteText}</p>
     </div>
   );
 }

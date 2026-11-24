@@ -23,7 +23,7 @@ No new libraries or services without the user's approval.
 
 ## Rules
 - Hebrew UI, `<html lang="he" dir="rtl">`. Logical CSS only (`ms-`/`me-`, `ps-`/`pe-`, `start`/`end`, `text-start`); never `ml-`, `left-`, `text-left`.
-- Write number ranges as "18 עד 44", not "18–44".
+- Write number ranges as "18 עד 44", not "18–44" (bidi reverses digit–digit in RTL). Technique names like "נשימה 4–6" are not ranges.
 - Accessibility (IS 5568 / WCAG AA): labels on every field, visible focus, keyboard navigation, alt text, contrast as in `DESIGN.md`, touch targets ≥ 44px.
 - Visual level 1: CSS transitions only; honor `prefers-reduced-motion`.
 - Privacy: no analytics, no cookies, no third-party requests except the feedback POST. Never send personal content anywhere. Show "נשמר רק בטלפון הזה" wherever the user writes.

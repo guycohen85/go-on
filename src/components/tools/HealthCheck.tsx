@@ -11,15 +11,23 @@ interface Props {
   stepsTitle: string;
   allGood: string;
   disclaimer: string;
+  emptyText: string;
 }
 
 /** Short weekly check-in with personal, non-diagnostic feedback. Nothing is stored. */
-export default function HealthCheck({ fields, strengths, steps, intro, stepsTitle, allGood, disclaimer }: Props) {
+export default function HealthCheck({ fields, strengths, steps, intro, stepsTitle, allGood, disclaimer, emptyText }: Props) {
   const [v, setV] = useState<Partial<Record<Key, string>>>({});
   const [out, setOut] = useState<{ good: string[]; next: string[] } | null>(null);
+  const [empty, setEmpty] = useState(false);
 
   function give(e: Event) {
     e.preventDefault();
+    if (!Object.values(v).some((x) => x !== undefined && x !== '')) {
+      setOut(null);
+      setEmpty(true);
+      return;
+    }
+    setEmpty(false);
     const n = (k: Key) => (v[k] === undefined || v[k] === '' ? null : Number(v[k]));
     const good: string[] = [];
     const next: string[] = [];
@@ -53,6 +61,7 @@ export default function HealthCheck({ fields, strengths, steps, intro, stepsTitl
       </div>
       <button type="submit" class={`${primary} mt-4`}>קבלת פידבק</button>
       <div role="status" aria-live="polite">
+        {empty && <p class={note}>{emptyText}</p>}
         {out && (
           <div class="mt-4 rounded-card bg-paper p-4">
             <h4 class="font-display text-card font-medium">הפידבק שלך</h4>

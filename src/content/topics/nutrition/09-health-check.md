@@ -6,15 +6,16 @@ tools:
   - type: health-check
     data:
       fields:
-        - { id: energy, label: "אנרגיה (0–10)", max: 10 }
-        - { id: sleep, label: "איכות שינה (0–10)", max: 10 }
-        - { id: eating, label: "אכילה סדירה ומספקת (0–10)", max: 10 }
+        - { id: energy, label: "אנרגיה (0 עד 10)", max: 10 }
+        - { id: sleep, label: "איכות שינה (0 עד 10)", max: 10 }
+        - { id: eating, label: "אכילה סדירה ומספקת (0 עד 10)", max: 10 }
         - { id: moveDays, label: כמה ימים זזתי השבוע?, max: 7 }
-        - { id: stress, label: "רמת מתח (0–10)", max: 10 }
-        - { id: support, label: "תחושת קשר ותמיכה (0–10)", max: 10 }
+        - { id: stress, label: "רמת מתח (0 עד 10)", max: 10 }
+        - { id: support, label: "תחושת קשר ותמיכה (0 עד 10)", max: 10 }
       intro: עצם זה שעצרת ובדקת מה קורה איתך הוא כבר צעד של תשומת לב לעצמך.
       stepsTitle: "איפה אפשר לבחור צעד קטן:"
       allGood: נראה שיש כמה עוגנים טובים השבוע. המשימה היא לא להעמיס עוד, אלא לשמור על מה שעובד.
+      emptyText: כדי לקבל פידבק, מלאו לפחות שדה אחד.
       disclaimer: הפידבק אינו אבחון רפואי ואינו מחליף בירור של תסמין חדש או מחמיר.
       strengths:
         energy: יש לך כרגע בסיס אנרגיה סביר שאפשר לבנות עליו.

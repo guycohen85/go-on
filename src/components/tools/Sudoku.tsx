@@ -31,7 +31,13 @@ export default function Sudoku() {
   }
   function check() {
     if (cells.some((c) => !c)) return setOut('יש עוד תאים פתוחים.');
-    const ok = cells.every((c, i) => Number(c) === board.solution.flat()[i]);
+    // Accept any board that follows the rules (a puzzle can have more than one solution).
+    const v = cells.map(Number);
+    const unit = (idx: number[]) => new Set(idx.map((i) => v[i])).size === 4;
+    const rows = [0, 1, 2, 3].map((r) => [0, 1, 2, 3].map((c) => r * 4 + c));
+    const cols = [0, 1, 2, 3].map((c) => [0, 1, 2, 3].map((r) => r * 4 + c));
+    const boxes = [0, 2, 8, 10].map((s) => [s, s + 1, s + 4, s + 5]);
+    const ok = [...rows, ...cols, ...boxes].every(unit);
     setOut(ok ? 'מצוין, הלוח נכון ✓' : 'יש כמה תאים שכדאי לבדוק שוב.');
   }
   return (

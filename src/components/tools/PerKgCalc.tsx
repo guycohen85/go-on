@@ -25,7 +25,7 @@ export default function PerKgCalc({ id, min, max, step, unit, basis, button }: P
       setOut('הזינו משקל תקין (בק״ג).');
       return;
     }
-    setOut(`${round(w * min).toLocaleString('he-IL')}–${round(w * max).toLocaleString('he-IL')} ${unit}`);
+    setOut(`${round(w * min).toLocaleString('he-IL')} עד ${round(w * max).toLocaleString('he-IL')} ${unit}`);
   }
   return (
     <form class="mt-4 rounded-card bg-sky p-4" onSubmit={calc}>

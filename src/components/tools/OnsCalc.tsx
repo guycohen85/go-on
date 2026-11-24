@@ -10,7 +10,10 @@ export default function OnsCalc() {
   const [f, setF] = useState<Fields>({ product: '', servings: '', protein: '' });
   const [out, setOut] = useState<string | null>(null);
   useEffect(() => {
-    void load<Partial<Fields>>(KEY, {}).then((s) => setF((c) => ({ ...c, ...s })));
+    // Stored values fill in only what the user has not typed yet.
+    const fill = (s: Partial<Fields>) =>
+      setF((c) => ({ product: c.product || s.product || '', servings: c.servings || s.servings || '', protein: c.protein || s.protein || '' }));
+    void load<Partial<Fields>>(KEY, {}, fill).then(fill);
   }, []);
   function set(k: keyof Fields, v: string) {
     setF((c) => ({ ...c, [k]: v }));
@@ -44,6 +47,7 @@ export default function OnsCalc() {
         <button type="submit" class={primary}>חישוב תרומת החלבון היומית</button>
         <p class={result} role="status" aria-live="polite">{out}</p>
         {out?.startsWith('תרומת') && <p class={note}>יש לחבר זאת לצריכת החלבון מהמזון ולבחון מול היעד האישי.</p>}
+        <p class={note}>הפרטים נשמרים רק בטלפון הזה.</p>
       </div>
     </form>
   );

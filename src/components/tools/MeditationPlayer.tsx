@@ -12,31 +12,48 @@ interface Practice {
 
 interface Props {
   practices: Practice[];
+  noVoiceText: string;
 }
 
 /** Practice folders; a practice opens as text, and can be read aloud where Hebrew speech exists. */
-export default function MeditationPlayer({ practices }: Props) {
+export default function MeditationPlayer({ practices, noVoiceText }: Props) {
   const folders = [...new Map(practices.map((p) => [p.folder, p.folderSummary])).entries()];
   const [openId, setOpenId] = useState<string | null>(null);
   const [speaking, setSpeaking] = useState(false);
   const [noVoice, setNoVoice] = useState(false);
   const current = practices.find((p) => p.id === openId);
 
-  useEffect(() => () => window.speechSynthesis?.cancel(), []);
+  // Voices load asynchronously (Chrome/Android return [] at first): keep the list fresh.
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+    const refresh = () => setVoices(synth.getVoices());
+    refresh();
+    synth.addEventListener('voiceschanged', refresh);
+    return () => {
+      synth.removeEventListener('voiceschanged', refresh);
+      setNoVoice(false);
+    synth.cancel();
+    };
+  }, []);
 
   function speak() {
     const synth = window.speechSynthesis;
-    const voice = synth?.getVoices().find((v) => v.lang.toLowerCase().startsWith('he'));
+    const all = voices.length ? voices : (synth?.getVoices() ?? []);
+    const voice = all.find((v) => v.lang.toLowerCase().startsWith('he'));
     if (!synth || !current || !voice) {
       setNoVoice(true);
       return;
     }
+    setNoVoice(false);
     synth.cancel();
     const u = new SpeechSynthesisUtterance(current.lines.join('\n'));
     u.lang = 'he-IL';
     u.voice = voice;
     u.rate = 0.85;
     u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
     setSpeaking(true);
     synth.speak(u);
   }
@@ -59,7 +76,7 @@ export default function MeditationPlayer({ practices }: Props) {
         <div class="mt-3 flex flex-wrap gap-2">
           {!speaking ? <button type="button" class={primary} onClick={speak}>השמעה בקול</button> : <button type="button" class={primary} onClick={stop}>עצירה</button>}
         </div>
-        {noVoice && <p class={note} role="status">הדפדפן אינו תומך בהקראה בעברית. אפשר לקרוא את התרגיל בקצב אישי.</p>}
+        {noVoice && <p class={note} role="status">{noVoiceText}</p>}
         <div class="mt-4 grid gap-2.5 text-lead">
           {current.lines.map((l, i) => <p key={i}>{l}</p>)}
         </div>

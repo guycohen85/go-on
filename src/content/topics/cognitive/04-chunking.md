@@ -5,6 +5,7 @@ icon: squares-four
 tools:
   - type: chunking
     data:
+      note: אין קיבוץ אחד נכון. העיקר הוא למצוא קבוצות שמשמעותיות לך.
       groups:
         - { name: פירות, items: [תפוח, אגס, בננה] }
         - { name: כלי תחבורה, items: [אוטובוס, רכבת, מונית] }

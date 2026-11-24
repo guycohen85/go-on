@@ -10,6 +10,7 @@ export default function DigitSequence() {
   const [visible, setVisible] = useState(false);
   const [answer, setAnswer] = useState('');
   const [out, setOut] = useState('');
+  const [checked, setChecked] = useState(false);
   const t = useRef(0);
 
   function start(n = len) {
@@ -18,12 +19,14 @@ export default function DigitSequence() {
     setSeq(s);
     setAnswer('');
     setOut('');
+    setChecked(false);
     setVisible(true);
     t.current = window.setTimeout(() => setVisible(false), 1000 + n * 600);
   }
   function check(e: Event) {
     e.preventDefault();
-    if (!seq || visible) return;
+    if (!seq || visible || checked) return;
+    setChecked(true);
     if (answer.replace(/\s/g, '') === seq) {
       setOut('נכון ✓');
       setLen((l) => Math.min(l + 1, 10));
@@ -37,8 +40,8 @@ export default function DigitSequence() {
       <p class="font-display text-display font-semibold tracking-widest" aria-live="polite"><bdi dir="ltr">{visible ? seq : seq ? '• • •' : '—'}</bdi></p>
       <button type="button" class={secondary} onClick={() => start()}>רצף חדש ({len} ספרות)</button>
       <label for="seq-answer" class={`${label} mt-4`}>מה זכרת?</label>
-      <input id="seq-answer" type="text" inputMode="numeric" dir="ltr" autoComplete="off" class={`${input} text-start`} value={answer} onInput={(e) => setAnswer(e.currentTarget.value)} disabled={!seq || visible} />
-      <button type="submit" class={`${primary} mt-3`} disabled={!seq || visible}>בדיקה</button>
+      <input id="seq-answer" type="text" inputMode="numeric" dir="ltr" autoComplete="off" class={`${input} text-start`} value={answer} onInput={(e) => setAnswer(e.currentTarget.value)} disabled={!seq || visible || checked} />
+      <button type="submit" class={`${primary} mt-3`} disabled={!seq || visible || checked}>בדיקה</button>
       <p class={result} role="status" aria-live="polite">{out}</p>
     </form>
   );

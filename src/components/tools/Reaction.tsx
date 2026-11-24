@@ -4,7 +4,7 @@ import { note } from './ui';
 type Phase = 'idle' | 'wait' | 'go' | 'early' | 'done';
 
 /** Reaction time: tap only when the button says "now". Compare only with yourself. */
-export default function Reaction() {
+export default function Reaction({ note: noteText }: { note: string }) {
   const [phase, setPhase] = useState<Phase>('idle');
   const [ms, setMs] = useState<number | null>(null);
   const [best, setBest] = useState<number | null>(null);
@@ -39,7 +39,7 @@ export default function Reaction() {
         {phase === 'early' && 'נסו שוב בלי לנחש.'}
         {phase === 'done' && ms !== null && `${ms} אלפיות שנייה${best !== null ? ` (הכי מהיר היום: ${best})` : ''}`}
       </p>
-      <p class={note}>זמן תגובה: השוו לעצמכם בלבד.</p>
+      <p class={note}>{noteText}</p>
     </div>
   );
 }

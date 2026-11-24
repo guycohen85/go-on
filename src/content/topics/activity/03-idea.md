@@ -1,6 +1,6 @@
 ---
 title: מה לעשות עכשיו?
-summary: רעיון קצר לפעילות, 5–15 דקות
+summary: רעיון קצר לפעילות, 5 עד 15 דקות
 icon: shuffle
 tools:
   - type: activity-idea

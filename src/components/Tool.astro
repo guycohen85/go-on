@@ -51,14 +51,14 @@ const practices =
 {type === 'workout' && <Workout client:visible levels={d.levels} caution={d.caution} />}
 {type === 'steps' && <Steps client:visible />}
 {type === 'activity-timer' && <ActivityTimer client:visible kinds={d.kinds} />}
-{type === 'move-reminder' && <MoveReminder client:visible />}
+{type === 'move-reminder' && <MoveReminder client:visible alert={d.alert} note={d.note} />}
 {type === 'activity-idea' && <ActivityIdea client:visible ideas={d.ideas} />}
 {type === 'log' && <LogForm client:visible id={d.id} fields={d.fields} />}
 {type === 'memory-pairs' && <MemoryPairs client:only="preact" />}
 {type === 'digit-sequence' && <DigitSequence client:visible />}
-{type === 'chunking' && <Chunking client:only="preact" groups={d.groups} />}
-{type === 'reaction' && <Reaction client:visible />}
-{type === 'stroop' && <Stroop client:only="preact" />}
+{type === 'chunking' && <Chunking client:only="preact" groups={d.groups} note={d.note} />}
+{type === 'reaction' && <Reaction client:visible note={d.note} />}
+{type === 'stroop' && <Stroop client:only="preact" note={d.note} />}
 {type === 'sudoku' && <Sudoku client:only="preact" />}
 {type === 'crossword' && <Crossword client:visible clues={d.clues} />}
-{type === 'meditations' && <MeditationPlayer client:visible practices={practices} />}
+{type === 'meditations' && <MeditationPlayer client:visible practices={practices} noVoiceText={d.noVoiceText} />}
