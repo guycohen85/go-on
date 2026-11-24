@@ -31,6 +31,7 @@ const accordion = sections.length >= 3;
 const rendered = await Promise.all(all.map(async (s) => ({ entry: s, Content: (await render(s)).Content })));
 const byId = new Map(rendered.map((r) => [r.entry.id, r.Content]));
 const slug = (id: string) => id.split('/')[1]!.replace(/^\d+-/, '');
+const draftLabel = (draft: boolean | string) => (typeof draft === 'string' ? draft : '[טיוטה מהאפיון – לבדיקה]');
 ---
 <article class="page pt-6">
   <header class="flex items-center gap-3.5">
@@ -45,8 +46,8 @@ const slug = (id: string) => id.split('/')[1]!.replace(/^\d+-/, '');
     intro.map((s) => {
       const Content = byId.get(s.id)!;
       return (
-        <div class="prose-go mt-5 max-w-[68ch]">
-          {s.data.draft && <p class="draft">טיוטה – לבדיקת הלקוחה</p>}
+        <div class="prose-go mt-5 max-w-prose">
+          {s.data.draft && <p class="draft">{draftLabel(s.data.draft)}</p>}
           <Content />
         </div>
       );
@@ -60,8 +61,8 @@ const slug = (id: string) => id.split('/')[1]!.replace(/^\d+-/, '');
         const d = s.data;
         const body = (
           <>
-            {d.draft && <p class="draft">טיוטה – לבדיקת הלקוחה</p>}
-            <div class="prose-go max-w-[68ch]">
+            {d.draft && <p class="draft">{draftLabel(d.draft)}</p>}
+            <div class="prose-go max-w-prose">
               <Content />
             </div>
             {d.checklist && <Checklist client:visible id={d.checklist.id} items={d.checklist.items} />}
@@ -112,3 +113,17 @@ const slug = (id: string) => id.split('/')[1]!.replace(/^\d+-/, '');
 
   {feedback && <Feedback client:visible page={topic} />}
 </article>
+
+<script>
+  // Open the section a link points to (e.g. /needs/relationships#conversation).
+  function openFromHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const target = id ? document.getElementById(id) : null;
+    if (target instanceof HTMLDetailsElement) {
+      target.open = true;
+      target.scrollIntoView({ block: 'start' });
+    }
+  }
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
+</script>

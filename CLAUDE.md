@@ -29,7 +29,7 @@ No new libraries or services without the user's approval.
 - Privacy: no analytics, no cookies, no third-party requests except the feedback POST. Never send personal content anywhere. Show "נשמר רק בטלפון הזה" wherever the user writes.
 - Medical content is general information, not advice: keep the disclaimer and never add personal medical recommendations.
 - Keep content in `src/content/`, not in components, so a CMS can be added later.
-- Placeholders for missing content: `[חסר: ...]`. Draft text from the spec stays marked `[טיוטה מהאפיון – לבדיקה]` until the client approves it.
+- Placeholders for missing content: `[חסר: ...]`. Draft text from the spec stays marked `[טיוטה מהאפיון – לבדיקה]` (`draft: true`), and content Claude added is marked `[טיוטה – לבדיקה]` (`draft: "[טיוטה – לבדיקה]"`), until the client approves it.
 
 ## Commands
 ```

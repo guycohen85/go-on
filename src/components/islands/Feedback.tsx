@@ -1,22 +1,28 @@
 import { useEffect, useState } from 'preact/hooks';
-import { load, save } from '../../lib/store';
+import { load, updateList } from '../../lib/store';
 
 const RATINGS = ['שימושי', 'לא ברור', 'חסר לי'] as const;
 type Rating = (typeof RATINGS)[number];
 
 interface Entry {
+  id: string;
   page: string;
   rating: Rating;
   message: string;
-  sentAt: string;
+  createdAt: string;
 }
 
 const QUEUE_KEY = 'feedbackQueue';
+const QUEUE_MAX = 20;
+const QUEUE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 const ENDPOINT = 'https://api.web3forms.com/submit';
 const ACCESS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY as string | undefined;
 
-async function post(entry: Entry): Promise<boolean> {
-  if (!ACCESS_KEY) return false;
+/** 'sent' on success, 'network' when offline or unreachable (worth retrying), 'rejected' otherwise. */
+type PostResult = 'sent' | 'network' | 'rejected';
+
+async function post(entry: Entry): Promise<PostResult> {
+  if (!ACCESS_KEY) return 'rejected';
   try {
     const res = await fetch(ENDPOINT, {
       method: 'POST',
@@ -31,22 +37,34 @@ async function post(entry: Entry): Promise<boolean> {
         app_version: import.meta.env.PUBLIC_APP_VERSION ?? 'dev',
       }),
     });
-    return res.ok;
+    return res.ok ? 'sent' : 'rejected';
   } catch {
-    return false;
+    return 'network';
   }
 }
 
-/** Send any feedback that was saved while offline. */
-async function flushQueue() {
-  const queue = await load<Entry[]>(QUEUE_KEY, []);
-  if (!queue.length || !navigator.onLine) return;
-  const left: Entry[] = [];
-  for (const entry of queue) if (!(await post(entry))) left.push(entry);
-  await save(QUEUE_KEY, left);
+const fresh = (e: Entry) => Date.now() - Date.parse(e.createdAt) < QUEUE_MAX_AGE_MS;
+
+/** Send feedback saved while offline. Only one flush runs at a time. */
+let flushing: Promise<void> | null = null;
+function flushQueue(): Promise<void> {
+  if (flushing) return flushing;
+  flushing = (async () => {
+    if (!navigator.onLine) return;
+    const queue = (await load<Entry[]>(QUEUE_KEY, [])).filter(fresh);
+    for (const entry of queue) {
+      const result = await post(entry);
+      if (result === 'network') break;
+      // Sent or permanently rejected: drop it from the latest stored queue.
+      await updateList<Entry>(QUEUE_KEY, (list) => list.filter((e) => e.id !== entry.id && fresh(e)));
+    }
+  })().finally(() => {
+    flushing = null;
+  });
+  return flushing;
 }
 
-type Phase = 'choose' | 'write' | 'sent' | 'queued';
+type Phase = 'choose' | 'write' | 'sent' | 'queued' | 'failed';
 
 interface Props {
   /** Stable id of the page, e.g. "needs/fertility". */
@@ -70,16 +88,27 @@ export default function Feedback({ page }: Props) {
   async function send() {
     if (!rating) return;
     setSending(true);
-    const entry: Entry = { page, rating, message: message.trim(), sentAt: new Date().toISOString() };
-    if (await post(entry)) {
+    const entry: Entry = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      page,
+      rating,
+      message: message.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    const result = await post(entry);
+    if (result === 'sent') {
       setPhase('sent');
-    } else {
-      const queue = await load<Entry[]>(QUEUE_KEY, []);
-      await save(QUEUE_KEY, [...queue, entry]);
+    } else if (result === 'network') {
+      await updateList<Entry>(QUEUE_KEY, (list) => [...list.filter(fresh), entry].slice(-QUEUE_MAX));
       setPhase('queued');
+    } else {
+      setPhase('failed');
     }
     setSending(false);
   }
+
+  // Without an access key feedback cannot be delivered: hide it in production builds.
+  if (!ACCESS_KEY && !import.meta.env.DEV) return null;
 
   return (
     <section class="mt-10 rounded-card border-2 border-line p-4" aria-labelledby={`fb-${page}`}>
@@ -89,6 +118,7 @@ export default function Feedback({ page }: Props) {
       <div role="status" aria-live="polite">
         {phase === 'sent' && <p class="mt-2">תודה! המשוב נשלח.</p>}
         {phase === 'queued' && <p class="mt-2">תודה! המשוב יישלח כשיהיה חיבור לאינטרנט.</p>}
+        {phase === 'failed' && <p class="mt-2">לא הצלחנו לשלוח את המשוב כרגע. אפשר לנסות שוב מאוחר יותר.</p>}
       </div>
       {(phase === 'choose' || phase === 'write') && (
         <>

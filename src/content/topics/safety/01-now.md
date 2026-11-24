@@ -1,7 +1,7 @@
 ---
 title: עזרה דחופה
 icon: siren
-draft: true
+draft: "[טיוטה – לבדיקה]"
 resources:
   - name: מגן דוד אדום
     description: חירום רפואי.

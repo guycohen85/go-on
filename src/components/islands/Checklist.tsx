@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { load, save } from '../../lib/store';
+import { load, merge } from '../../lib/store';
 
 const STATUSES = ['לבדוק', 'בטיפול', 'הושלם', 'לא רלוונטי'] as const;
 type ItemStatus = (typeof STATUSES)[number];
@@ -12,20 +12,22 @@ interface Props {
 /** A list of tasks, each with a status, saved to this device only. */
 export default function Checklist({ id, items }: Props) {
   const key = `checklist:${id}`;
-  const [state, setState] = useState<Record<number, ItemStatus>>({});
+  // Statuses are keyed by the item text, so adding or reordering items in the content
+  // never moves a saved status onto a different task.
+  const [state, setState] = useState<Record<string, ItemStatus>>({});
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    load<Record<number, ItemStatus>>(key, {}).then((stored) => {
-      setState(stored);
+    const onLate = (late: Record<string, ItemStatus>) => setState((current) => ({ ...late, ...current }));
+    load<Record<string, ItemStatus>>(key, {}, onLate).then((stored) => {
+      setState((current) => ({ ...stored, ...current }));
       setReady(true);
     });
   }, [key]);
 
-  function choose(index: number, status: ItemStatus) {
-    const next = { ...state, [index]: status };
-    setState(next);
-    void save(key, next);
+  function choose(item: string, status: ItemStatus) {
+    setState((current) => ({ ...current, [item]: status }));
+    void merge<Record<string, ItemStatus>>(key, { [item]: status });
   }
 
   return (
@@ -38,7 +40,7 @@ export default function Checklist({ id, items }: Props) {
               <legend class="font-semibold">{item}</legend>
               <div class="mt-2.5 flex flex-wrap gap-2">
                 {STATUSES.map((status) => {
-                  const checked = state[index] === status;
+                  const checked = state[item] === status;
                   return (
                     <label
                       key={status}
@@ -52,7 +54,7 @@ export default function Checklist({ id, items }: Props) {
                         name={`${id}-${index}`}
                         value={status}
                         checked={checked}
-                        onChange={() => choose(index, status)}
+                        onChange={() => choose(item, status)}
                       />
                       {status}
                     </label>

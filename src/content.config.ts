@@ -77,7 +77,8 @@ const sections = defineCollection({
     summary: z.string().optional(),
     icon: z.string().optional(),
     intro: z.boolean().default(false),
-    draft: z.boolean().default(false),
+    /** true = text drafted from the spec; a string = a custom draft label (e.g. content Claude added). */
+    draft: z.union([z.boolean(), z.string()]).default(false),
     worksheet: z
       .object({ id: z.string(), title: z.string().optional(), fields: z.array(field) })
       .optional(),

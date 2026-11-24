@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
-import { load, save, type Answers } from '../../lib/store';
+import { useEffect, useState } from 'preact/hooks';
+import { load, merge, type Answers } from '../../lib/store';
 
 export interface WorksheetField {
   id: string;
@@ -15,7 +15,7 @@ interface Props {
   fields: WorksheetField[];
 }
 
-type Status = 'idle' | 'saving' | 'saved' | 'error';
+type Status = 'idle' | 'saved' | 'error';
 
 /** A form whose answers are saved automatically to this device only. */
 export default function Worksheet({ id, title, fields }: Props) {
@@ -23,23 +23,21 @@ export default function Worksheet({ id, title, fields }: Props) {
   const [answers, setAnswers] = useState<Answers>({});
   const [ready, setReady] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
-  const timer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    load<Answers>(key, {}).then((stored) => {
-      setAnswers(stored);
+    // If storage answers late, merge what was stored under anything typed meanwhile.
+    const onLate = (late: Answers) => setAnswers((current) => ({ ...late, ...current }));
+    load<Answers>(key, {}, onLate).then((stored) => {
+      setAnswers((current) => ({ ...stored, ...current }));
       setReady(true);
     });
   }, [key]);
 
-  function update(fieldId: string, value: string) {
-    const next = { ...answers, [fieldId]: value };
-    setAnswers(next);
-    setStatus('saving');
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(async () => {
-      setStatus((await save(key, next)) ? 'saved' : 'error');
-    }, 400);
+  // Save each change right away, merging only the changed field, so nothing typed is lost
+  // when leaving the page and no earlier answer is overwritten.
+  async function update(fieldId: string, value: string) {
+    setAnswers((current) => ({ ...current, [fieldId]: value }));
+    setStatus((await merge<Answers>(key, { [fieldId]: value })) ? 'saved' : 'error');
   }
 
   const inputClass =
@@ -112,7 +110,6 @@ export default function Worksheet({ id, title, fields }: Props) {
         })}
       </div>
       <p class="mt-3 text-small text-ink-2" role="status" aria-live="polite">
-        {status === 'saving' && 'שומר…'}
         {status === 'saved' && 'נשמר בטלפון הזה.'}
         {status === 'error' && 'לא הצלחנו לשמור. ייתכן שהדפדפן חוסם שמירה (למשל בגלישה בסתר).'}
         {status === 'idle' && 'התשובות נשמרות אוטומטית, רק בטלפון הזה.'}
