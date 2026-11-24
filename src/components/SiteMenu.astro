@@ -1,0 +1,108 @@
+---
+// Full-screen menu opened from the header: every topic and page in one list, grouped like the home page.
+// A native <dialog>: Esc closes it, focus stays inside while open and returns to the button on close.
+import { getCollection, getEntry } from 'astro:content';
+import Icon from './Icon.astro';
+import type { TileColor } from './Tile.astro';
+import { url } from '../lib/url';
+
+const byOrder = (a: { data: { order: number } }, b: { data: { order: number } }) => a.data.order - b.data.order;
+const home = (await getEntry('home', 'home'))!.data;
+const needs = (await getCollection('needs')).sort(byOrder);
+const myTools = (await getCollection('myTools')).sort(byOrder);
+const bodyMind = (await getCollection('bodyMind')).sort(byOrder);
+
+interface Item {
+  href: string;
+  title: string;
+  icon: string;
+  color?: TileColor;
+}
+
+const groups: { heading: string; items: Item[] }[] = [
+  { heading: home.needs.heading, items: needs.map((n) => ({ href: `/needs/${n.id}`, ...n.data })) },
+  { heading: home.myTools.heading, items: myTools.map((t) => ({ ...t.data })) },
+  { heading: home.bodyMind.heading, items: bodyMind.map((b) => ({ href: `/body-mind/${b.id}`, ...b.data })) },
+  {
+    heading: 'עוד',
+    items: [
+      { href: '/safety', title: 'צריך עזרה עכשיו?', icon: 'lifebuoy' },
+      { href: '/settings', title: 'גיבוי והגדרות', icon: 'gear' },
+      { href: '/references', title: 'מקורות', icon: 'book-open' },
+      { href: '/privacy', title: 'פרטיות', icon: 'shield-check' },
+      { href: '/accessibility', title: 'הצהרת נגישות', icon: 'wheelchair' },
+    ],
+  },
+];
+
+const iconColor: Record<TileColor, string> = {
+  green: 'text-i-green',
+  pink: 'text-i-pink',
+  blue: 'text-i-blue',
+  yellow: 'text-i-yellow',
+  orange: 'text-i-orange',
+  purple: 'text-i-purple',
+};
+
+const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isHere = (href: string) => (url(href).replace(/\/$/, '') || '/') === here;
+---
+<dialog
+  id="site-menu"
+  aria-labelledby="site-menu-title"
+  class="m-0 h-full max-h-none w-full max-w-none overflow-y-auto border-0 bg-paper p-0 text-ink"
+>
+  <div class="page pt-3.5 pb-[calc(24px+env(safe-area-inset-bottom,0px))]">
+    <div class="flex items-center justify-between">
+      <h2 id="site-menu-title" class="font-display text-h2 font-semibold">תפריט</h2>
+      <form method="dialog">
+        <button
+          type="submit"
+          class="grid size-11 cursor-pointer place-items-center rounded-pill text-icon transition-colors hover:bg-sky"
+          aria-label="סגירת התפריט"
+        >
+          <Icon name="x" weight="bold" />
+        </button>
+      </form>
+    </div>
+
+    <div class="mt-4 grid gap-7 md:grid-cols-2 md:gap-x-12">
+      {
+        groups.map((group, i) => (
+          <nav aria-labelledby={`menu-group-${i}`}>
+            <h3 id={`menu-group-${i}`} class="text-small font-bold text-ink-2">
+              {group.heading}
+            </h3>
+            <ul class="mt-1">
+              {group.items.map((item) => (
+                <li>
+                  <a
+                    href={url(item.href)}
+                    aria-current={isHere(item.href) ? 'page' : undefined}
+                    class="flex min-h-11 items-center gap-3 border-b border-line py-1.5 font-semibold no-underline transition-colors hover:text-go aria-[current=page]:font-bold"
+                  >
+                    <Icon
+                      name={item.icon}
+                      weight="duotone"
+                      class:list={['text-icon', item.color ? iconColor[item.color] : 'text-ink']}
+                    />
+                    {item.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const menu = document.getElementById('site-menu') as HTMLDialogElement | null;
+  document.querySelector('[data-menu-open]')?.addEventListener('click', () => menu?.showModal());
+  // Close before following a link, so the menu is not open when coming back with the back button.
+  menu?.addEventListener('click', (e) => {
+    if ((e.target as Element).closest('a')) menu.close();
+  });
+</script>

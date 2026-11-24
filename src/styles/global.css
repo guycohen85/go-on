@@ -84,6 +84,8 @@
      instead (browsers also mark <summary> as focus-visible after a click, hence data-input). */
   summary:focus, summary:focus-visible { outline: none; }
   html[data-input='keyboard'] summary:focus-visible { background: var(--color-sky); border-radius: var(--radius-card); }
+  /* The page behind the open menu does not scroll. */
+  html:has(dialog[open]) { overflow: hidden; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; animation: none !important; }
   }
