@@ -9,7 +9,7 @@ Version 1 has no companion flow (no unlock codes, no companion area, no particip
 - Content in Markdown via Astro content collections (`src/content/`), separated from code so a CMS (Keystatic) can be added later. Topic pages: one folder per topic in `src/content/topics/<topic>/`, one Markdown file per section; a section's frontmatter can add a worksheet, a status checklist, resource cards, internal links or tools
 - "חוזרים לחיים": hub texts and baseline domains in `src/content/back-to-life.json`; stations in `src/content/stations/<nn>.md` (frontmatter only); intro, before, baseline and appendix are topic folders `src/content/topics/back-to-life-<part>/`
 - PWA: `@vite-pwa/astro` 2.x (Workbox precache of all pages and assets; works offline after first load)
-- Hosting: Cloudflare Workers with static assets, account in the client's name. Until then, previews on GitHub Pages
+- Hosting: Cloudflare Workers with static assets, account in the client's name. Until then, previews on GitHub Pages (https://guycohen85.github.io/go-on/), deployed by `.github/workflows/pages.yml` on every push to main with `BASE_PATH=/go-on/` and `PUBLIC_PREVIEW=1` (noindex)
 - Fonts self-hosted via Fontsource (Fredoka 500/600, Assistant 400/600/700); icons: Phosphor duotone/regular, inlined as SVG at build time
 
 ## Sitemap

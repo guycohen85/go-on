@@ -26,6 +26,7 @@ const fullTitle = title ? `${title} | GO ON` : 'GO ON: תמיכה, מידע וכ
     <meta name="description" content={description} />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <meta name="theme-color" content="#ffffff" />
+    {import.meta.env.PUBLIC_PREVIEW && <meta name="robots" content="noindex, nofollow" />}
     <script is:inline>
       // Remember whether the last interaction was a tap/click or the keyboard,
       // so focus rings appear only for keyboard users where browsers over-report focus-visible.

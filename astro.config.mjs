@@ -8,6 +8,8 @@ const { version } = JSON.parse(readFileSync(new URL('./package.json', import.met
 
 export default defineConfig({
   output: 'static',
+  // Sub-path when served from a folder, e.g. /go-on/ on GitHub Pages (set by the deploy workflow).
+  base: process.env.BASE_PATH ?? '/',
   trailingSlash: 'ignore',
   integrations: [preact()],
   vite: {
