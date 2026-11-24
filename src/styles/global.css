@@ -78,6 +78,11 @@
     background: var(--color-paper);
   }
   :focus-visible { outline: 3px solid var(--color-ink); outline-offset: 3px; }
+  /* Section headers (accordion): show the keyboard focus ring on the whole rounded card,
+     and none after a tap or click (browsers mark <summary> as focus-visible on click too). */
+  summary:focus-visible { outline: none; }
+  details:has(> summary:focus-visible) { outline: 3px solid var(--color-ink); outline-offset: 3px; }
+  html[data-input='pointer'] details:has(> summary:focus-visible) { outline: none; }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; animation: none !important; }
   }
