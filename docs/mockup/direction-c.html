@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO ON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  :root {
+    --ink: #1b2a8f;
+    --ink-2: #4b5689;
+    --sky: #8fd0f5;
+    --cloud: #ffffff;
+    --sun: #f7c548;
+    --sun-glow-1: #fbe39a;
+    --sun-glow-2: #c9e8f0;
+    --hill-back: #5fbf66;
+    --grass: #7fd77a;
+    --grass-deep: #4fae58;
+    --path: #fbf3d6;
+    --go: #2e7d3a;
+    --go-edge: #1d5626;
+    --paper: #ffffff;
+    --line: #dbe7f1;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--ink); background: var(--grass);
+    font-family: Assistant, system-ui, sans-serif; font-size: 17px; line-height: 1.55;
+    padding-block-end: 96px;
+  }
+  .round { font-family: Fredoka, Assistant, sans-serif; }
+  a { color: inherit; }
+  .wrap { max-width: 1040px; margin-inline: auto; padding-inline: 18px; }
+
+  /* sky scene */
+  .scene { background: var(--sky); position: relative; overflow: hidden; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding-block: 14px; position: relative; z-index: 2; }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 24px; font-weight: 700; color: var(--ink); }
+  .brand img { width: 42px; height: 42px; background: #fff; border-radius: 14px; padding: 3px; }
+  .help {
+    display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; text-decoration: none;
+    background: var(--paper); border-radius: 999px; padding: 7px 14px; box-shadow: 0 3px 0 #6aa9cf;
+  }
+
+  .hello { position: relative; z-index: 2; text-align: center; padding-block: 10px 0; }
+  .badge {
+    display: inline-block; background: var(--paper); border-radius: 999px; padding: 4px 14px;
+    font-weight: 700; font-size: 15px; box-shadow: 0 3px 0 #6aa9cf;
+  }
+  .hello h1 {
+    font-family: Fredoka, Assistant, sans-serif; font-weight: 700;
+    font-size: clamp(42px, 12vw, 84px); line-height: 1.05; margin: 12px 0 6px;
+    color: #fff; -webkit-text-stroke: 10px var(--ink); paint-order: stroke fill; letter-spacing: .5px;
+  }
+  .hello p { margin: 0 auto; max-width: 30ch; font-size: 19px; font-weight: 600; }
+
+  .land { display: block; width: 100%; height: clamp(230px, 42vw, 430px); margin-block-start: -40px; }
+  .land .me { font: 700 22px Assistant, sans-serif; fill: var(--ink); }
+
+  /* panels on the grass */
+  .panels { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; padding-block: 4px 10px; }
+  @media (min-width: 880px) { .panels { grid-template-columns: 380px minmax(0, 1fr); align-items: start; } }
+  .panel { background: var(--paper); border-radius: 26px; padding: 22px; box-shadow: 0 6px 0 var(--grass-deep); }
+  .panel h2 { font-family: Fredoka, Assistant, sans-serif; font-weight: 600; font-size: 26px; margin: 0 0 4px; line-height: 1.2; }
+  .panel .sub { color: var(--ink-2); margin: 0 0 16px; }
+
+  .btn {
+    display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%;
+    background: var(--go); color: #fff; text-decoration: none; font-weight: 700; font-size: 19px;
+    border-radius: 18px; padding: 15px 20px; box-shadow: 0 5px 0 var(--go-edge);
+    transition: transform .1s, box-shadow .1s;
+  }
+  .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--go-edge); }
+  .code { margin-block-start: 20px; }
+  .code label { font-weight: 700; display: block; margin-block-end: 8px; }
+  .code .row { display: flex; gap: 8px; }
+  .code input {
+    flex: 1; min-width: 0; font: 700 22px ui-monospace, monospace; letter-spacing: 8px; text-align: center; color: var(--ink);
+    border: 3px solid var(--line); border-radius: 16px; padding: 9px;
+  }
+  .code input:focus { outline: none; border-color: var(--ink); }
+  .code button {
+    font: inherit; font-weight: 700; background: var(--ink); color: #fff; border: 0; border-radius: 16px;
+    padding-inline: 18px; box-shadow: 0 4px 0 #0f1a5e; cursor: pointer;
+  }
+  .pid { font-size: 14px; color: var(--ink-2); margin: 12px 0 0; }
+
+  .needs { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  @media (min-width: 560px) { .needs { grid-template-columns: 1fr 1fr; } }
+  .needs a {
+    display: flex; gap: 12px; align-items: center; text-decoration: none;
+    border: 3px solid var(--line); border-radius: 18px; padding: 10px 12px; transition: border-color .15s;
+  }
+  .needs a:hover { border-color: var(--ink); }
+  .needs .ic { flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 28px; }
+  .needs b { display: block; font-size: 17px; line-height: 1.3; }
+  .needs span { font-size: 14px; color: var(--ink-2); }
+  .c1 { background: #e3f6df; } .c2 { background: #fde3ea; } .c3 { background: #e2ecfd; } .c4 { background: #fff1cc; }
+
+  .minute { margin-block-start: 18px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chips a {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-weight: 700;
+    background: #eef6fd; border-radius: 999px; padding: 8px 16px 8px 12px;
+  }
+  .chips a i { font-size: 22px; }
+  .chips small { font-weight: 400; color: var(--ink-2); }
+
+  .note { font-size: 15px; color: #123d18; text-align: center; padding-block: 22px 6px; font-weight: 600; }
+
+  nav.bottom {
+    position: fixed; inset-inline: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    max-width: 560px; margin-inline: auto; background: var(--paper); border-radius: 24px;
+    display: flex; justify-content: space-around; padding-block: 8px; box-shadow: 0 4px 0 var(--grass-deep), 0 0 0 2px rgba(27,42,143,.06);
+  }
+  nav.bottom a { display: flex; flex-direction: column; align-items: center; font-size: 13px; text-decoration: none; color: var(--ink-2); min-width: 56px; }
+  nav.bottom i { font-size: 25px; }
+  nav.bottom a[aria-current] { color: var(--ink); font-weight: 700; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="scene">
+  <header class="wrap top">
+    <a class="brand round" href="#"><img src="../../assets/logo/go-on-mark.svg" alt="">GO ON</a>
+    <a class="help" href="#"><i class="ph-bold ph-lifebuoy" aria-hidden="true"></i>צריך עזרה עכשיו?</a>
+  </header>
+
+  <!-- clouds -->
+  <svg aria-hidden="true" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMin slice" style="position:absolute;inset:0;width:100%;height:300px;z-index:1">
+    <g fill="#fff">
+      <circle cx="160" cy="210" r="60"/><circle cx="230" cy="180" r="74"/><circle cx="310" cy="215" r="52"/><rect x="150" y="215" width="170" height="52" rx="26"/>
+      <circle cx="930" cy="120" r="52"/><circle cx="1000" cy="96" r="66"/><circle cx="1070" cy="128" r="46"/><rect x="920" y="125" width="160" height="48" rx="24"/>
+    </g>
+  </svg>
+
+  <div class="wrap hello">
+    <span class="badge">התחנה שלך: 3 מתוך 12</span>
+    <h1>יעד קטן בדרך</h1>
+    <p>לבחור צעד אחד שאפשר לעשות השבוע, בקצב שלך.</p>
+  </div>
+
+  <!-- landscape: the path climbs from here to the sun (station 12) -->
+  <svg class="land" viewBox="0 0 1200 430" preserveAspectRatio="xMidYMax slice" role="img" aria-label="ההתקדמות שלך: תחנות 1 ו־2 הושלמו, את/ה בתחנה 3, עוד 9 תחנות עד השמש">
+    <circle cx="600" cy="200" r="120" fill="var(--sun-glow-2)"/>
+    <circle cx="600" cy="200" r="84" fill="var(--sun-glow-1)"/>
+    <circle cx="600" cy="200" r="56" fill="var(--sun)"/>
+    <path d="M0 240 C180 170 360 200 520 215 C700 232 860 160 1200 200 L1200 430 L0 430 Z" fill="var(--hill-back)"/>
+    <path d="M0 300 C200 250 420 250 600 236 C800 222 980 270 1200 260 L1200 430 L0 430 Z" fill="var(--grass)"/>
+    <g fill="#3f9b4a"><circle cx="150" cy="292" r="26"/><circle cx="178" cy="276" r="30"/><circle cx="206" cy="294" r="24"/>
+      <circle cx="1010" cy="262" r="24"/><circle cx="1036" cy="248" r="28"/><circle cx="1062" cy="264" r="22"/></g>
+    <g fill="#fff"><circle cx="330" cy="380" r="5"/><circle cx="342" cy="372" r="5"/><circle cx="880" cy="340" r="5"/><circle cx="892" cy="350" r="5"/><circle cx="420" cy="300" r="4"/></g>
+    <!-- path, wider near the viewer -->
+    <path d="M760 440 C640 410 420 380 470 335" fill="none" stroke="var(--path)" stroke-width="64" stroke-linecap="round"/>
+    <path d="M470 335 C520 290 720 300 690 262" fill="none" stroke="var(--path)" stroke-width="38" stroke-linecap="round"/>
+    <path d="M690 262 C670 238 580 248 600 236" fill="none" stroke="var(--path)" stroke-width="18" stroke-linecap="round"/>
+    <path id="centre" d="M760 440 C640 410 420 380 470 335 C520 290 720 300 690 262 C670 238 580 248 600 236" fill="none"/>
+    <g id="stations"></g>
+  </svg>
+</div>
+
+<main class="wrap panels">
+  <section class="panel" aria-labelledby="go-h">
+    <h2 id="go-h">להמשיך מאיפה שעצרת</h2>
+    <p class="sub">תחנה 3: יעד קטן בדרך</p>
+    <a class="btn" href="#">להמשיך בתחנה 3 <i class="ph-bold ph-arrow-left" aria-hidden="true"></i></a>
+    <form class="code" onsubmit="return false">
+      <label for="code">קיבלת קוד מהמלווה לתחנה 4?</label>
+      <div class="row"><input id="code" inputmode="numeric" maxlength="4" placeholder="····" autocomplete="off"><button type="submit">פתיחה</button></div>
+      <p class="pid">מספר המשתתף שלך: <b>K7M‑4QP</b>. המלווה צריך אותו כדי לתת קוד.</p>
+    </form>
+  </section>
+
+  <section class="panel" aria-labelledby="needs-h">
+    <h2 id="needs-h">מה מעסיק אותך עכשיו?</h2>
+    <p class="sub">8 הצרכים של צעירים שמתמודדים עם סרטן ומחלימים</p>
+    <ul class="needs">
+      <li><a href="#"><span class="ic c1"><i class="ph-duotone ph-plant" aria-hidden="true"></i></span><div><b>פוריות ושימור פוריות</b><span>שאלות לצוות ותכנון</span></div></a></li>
+      <li><a href="#"><span class="ic c2"><i class="ph-duotone ph-heart" aria-hidden="true"></i></span><div><b>זוגיות, אינטימיות ומיניות</b><span>דימוי גוף ודייטינג</span></div></a></li>
+      <li><a href="#"><span class="ic c3"><i class="ph-duotone ph-briefcase" aria-hidden="true"></i></span><div><b>עבודה ולימודים</b><span>חזרה הדרגתית</span></div></a></li>
+      <li><a href="#"><span class="ic c4"><i class="ph-duotone ph-scales" aria-hidden="true"></i></span><div><b>זכויות ובירוקרטיה</b><span>ביטוח לאומי וועדות</span></div></a></li>
+      <li><a href="#"><span class="ic c2"><i class="ph-duotone ph-baby" aria-hidden="true"></i></span><div><b>הורות לצד המחלה</b><span>איך מדברים עם ילדים</span></div></a></li>
+      <li><a href="#"><span class="ic c1"><i class="ph-duotone ph-hand-heart" aria-hidden="true"></i></span><div><b>בדידות ושייכות</b><span>מעגל תמיכה</span></div></a></li>
+      <li><a href="#"><span class="ic c4"><i class="ph-duotone ph-sun-horizon" aria-hidden="true"></i></span><div><b>היום שאחרי</b><span>שגרה חדשה ועתיד</span></div></a></li>
+      <li><a href="#"><span class="ic c3"><i class="ph-duotone ph-stethoscope" aria-hidden="true"></i></span><div><b>רפואה מותאמת גיל</b><span>ייעוץ גנטי ושאלות לצוות</span></div></a></li>
+    </ul>
+
+    <div class="minute">
+      <h2>דקה בשבילך</h2>
+      <p class="sub">תרגול קצר לגוף ולראש</p>
+      <div class="chips">
+        <a href="#"><i class="ph-duotone ph-flower-lotus" aria-hidden="true"></i>נשימה מרגיעה <small>3 דק׳</small></a>
+        <a href="#"><i class="ph-duotone ph-person-simple-walk" aria-hidden="true"></i>הליכה קלה <small>10 דק׳</small></a>
+        <a href="#"><i class="ph-duotone ph-drop" aria-hidden="true"></i>כמה לשתות היום?</a>
+        <a href="#"><i class="ph-duotone ph-brain" aria-hidden="true"></i>משחק זיכרון <small>5 דק׳</small></a>
+        <a href="#"><i class="ph-duotone ph-barbell" aria-hidden="true"></i>קימה מכיסא <small>2 דק׳</small></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<p class="wrap note">כל מה שכתבת נשמר רק בטלפון הזה. המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי.</p>
+
+<nav class="bottom" aria-label="ניווט ראשי">
+  <a href="#" aria-current="page"><i class="ph-fill ph-house" aria-hidden="true"></i>בית</a>
+  <a href="#"><i class="ph ph-path" aria-hidden="true"></i>התהליך</a>
+  <a href="#"><i class="ph ph-notebook" aria-hidden="true"></i>היומן</a>
+  <a href="#"><i class="ph ph-toolbox" aria-hidden="true"></i>כלים</a>
+  <a href="#"><i class="ph ph-chart-line-up" aria-hidden="true"></i>מעקב</a>
+</nav>
+
+<script>
+  // Place the 12 stations along the path: closer together as the path recedes toward the sun.
+  (function () {
+    const ns = 'http://www.w3.org/2000/svg';
+    const centre = document.getElementById('centre');
+    const g = document.getElementById('stations');
+    const total = centre.getTotalLength();
+    const current = 3;
+    let pinLater = null;
+    for (let i = 1; i <= 12; i++) {
+      const t = 0.17 + 0.83 * (1 - Math.pow(1 - (i - 1) / 11, 1.6));
+      const p = centre.getPointAtLength(total * t);
+      const scale = 1 - 0.55 * t;
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('cx', p.x); c.setAttribute('cy', p.y);
+      if (i < current) {
+        c.setAttribute('r', 13 * scale); c.setAttribute('fill', '#f7c548'); c.setAttribute('stroke', '#c98f12'); c.setAttribute('stroke-width', 3 * scale);
+      } else if (i === current) {
+        c.setAttribute('r', 17 * scale); c.setAttribute('fill', '#1b2a8f'); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width', 6 * scale);
+        const pin = document.createElementNS(ns, 'g');
+        const w = 104, h = 40, x = p.x - w / 2, y = p.y - 70;
+        pin.innerHTML = '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="20" fill="#fff"/>' +
+          '<path d="M' + (p.x - 9) + ' ' + (y + h - 1) + ' L' + p.x + ' ' + (y + h + 12) + ' L' + (p.x + 9) + ' ' + (y + h - 1) + ' Z" fill="#fff"/>' +
+          '<text class="me" x="' + p.x + '" y="' + (y + 27) + '" text-anchor="middle">אני כאן</text>';
+        g.appendChild(c); pinLater = pin; continue;
+      } else {
+        c.setAttribute('r', 9 * scale); c.setAttribute('fill', '#fff'); c.setAttribute('stroke', '#d9cfa8'); c.setAttribute('stroke-width', 3 * scale);
+      }
+      g.appendChild(c);
+    }
+    if (pinLater) g.appendChild(pinLater);
+  })();
+</script>
+</body>
+</html>
