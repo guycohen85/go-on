@@ -6,7 +6,7 @@ Version 1 has no companion flow (no unlock codes, no companion area, no particip
 ## Stack
 - Astro 7 (static output) + Tailwind CSS 4 + TypeScript
 - Preact islands for interactive parts (station worksheets, diary, tools, calculators, tracking, feedback)
-- Content in Markdown via Astro content collections (`src/content/`), separated from code so a CMS (Keystatic) can be added later
+- Content in Markdown via Astro content collections (`src/content/`), separated from code so a CMS (Keystatic) can be added later. Topic pages: one folder per topic in `src/content/topics/<topic>/`, one Markdown file per section; a section's frontmatter can add a worksheet, a status checklist, resource cards or internal links
 - PWA: `@vite-pwa/astro` 2.x (Workbox precache of all pages and assets; works offline after first load)
 - Hosting: Cloudflare Workers with static assets, account in the client's name. Until then, previews on GitHub Pages
 - Fonts self-hosted via Fontsource (Fredoka 500/600, Assistant 400/600/700); icons: Phosphor duotone/regular, inlined as SVG at build time

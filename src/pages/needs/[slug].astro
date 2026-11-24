@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Placeholder from '../../components/Placeholder.astro';
+import TopicPage from '../../components/TopicPage.astro';
 
 export async function getStaticPaths() {
   const needs = await getCollection('needs');
@@ -14,5 +14,11 @@ interface Props {
 const { need } = Astro.props;
 ---
 <Base title={need.data.title} description={need.data.summary}>
-  <Placeholder title={need.data.title} milestone={2} />
+  <TopicPage
+    topic={need.id}
+    title={need.data.title}
+    summary={need.data.summary}
+    icon={need.data.icon}
+    color={need.data.color}
+  />
 </Base>

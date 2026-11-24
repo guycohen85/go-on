@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
-import Placeholder from '../components/Placeholder.astro';
+import TopicPage from '../components/TopicPage.astro';
 ---
-<Base title="צריך עזרה עכשיו?">
-  <Placeholder title="צריך עזרה עכשיו?" milestone={2} />
+<Base title="צריך עזרה עכשיו?" description="מתי פונים לצוות, לשירותי החירום או לעזרה רגשית">
+  <TopicPage topic="safety" title="צריך עזרה עכשיו?" summary="מתי לא להסתמך על האפליקציה" icon="lifebuoy" color="pink" feedback={false} />
 </Base>
