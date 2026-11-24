@@ -85,7 +85,23 @@ const sections = defineCollection({
     checklist: z.object({ id: z.string(), items: z.array(z.string()) }).optional(),
     resources: z.array(resource).optional(),
     links: z.array(z.object({ label: z.string(), href: z.string() })).optional(),
+    /** Interactive tools rendered after the text, in order. `data` is tool-specific content. */
+    tools: z
+      .array(z.object({ type: z.string(), data: z.record(z.string(), z.unknown()).optional() }))
+      .optional(),
   }),
 });
 
-export const collections = { home, needs, bodyMind, myTools, sections };
+const meditations = defineCollection({
+  loader: file('src/content/meditations.json'),
+  schema: z.object({
+    order: z.number(),
+    folder: z.string(),
+    folderSummary: z.string(),
+    title: z.string(),
+    minutes: z.string(),
+    lines: z.array(z.string()),
+  }),
+});
+
+export const collections = { home, needs, bodyMind, myTools, sections, meditations };

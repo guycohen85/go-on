@@ -5,6 +5,7 @@ import { getCollection, render } from 'astro:content';
 import Icon from './Icon.astro';
 import Tile, { type TileColor } from './Tile.astro';
 import Resources from './Resources.astro';
+import Tool from './Tool.astro';
 import Worksheet from './islands/Worksheet';
 import Checklist from './islands/Checklist';
 import Feedback from './islands/Feedback';
@@ -69,6 +70,7 @@ const draftLabel = (draft: boolean | string) => (typeof draft === 'string' ? dra
             {d.worksheet && (
               <Worksheet client:visible id={d.worksheet.id} title={d.worksheet.title} fields={d.worksheet.fields} />
             )}
+            {d.tools?.map((t) => <Tool type={t.type} data={t.data} />)}
             {d.resources && <Resources items={d.resources} flat={accordion} />}
             {d.links && (
               <ul class="mt-3 flex flex-wrap gap-x-5">
