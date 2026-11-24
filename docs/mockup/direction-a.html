@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO ON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  :root {
+    --ink: #1b2a8f;
+    --ink-2: #4b5689;
+    --bg: #f6f9fc;
+    --sky: #e5f1fb;
+    --line: #d6e3ef;
+    --go: #2e7d3a;
+    --go-ink: #fff;
+    --sun: #f2b632;
+    --radius-s: 10px;
+    --radius-l: 22px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Assistant, system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--bg);
+    padding-block-end: 84px;
+  }
+  h1, h2, h3, .brand { font-family: Fredoka, Assistant, sans-serif; font-weight: 600; line-height: 1.2; }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin-inline: auto; padding-inline: 20px; }
+
+  /* top bar */
+  .top { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-size: 24px; letter-spacing: .5px; text-decoration: none; }
+  .brand img { width: 40px; height: 40px; }
+  .help {
+    font-weight: 700; font-size: 15px; text-decoration: none;
+    border: 2px solid var(--ink); border-radius: 999px; padding: 6px 14px;
+    display: inline-flex; gap: 6px; align-items: center;
+  }
+
+  /* intro */
+  .intro { padding-block: 18px 26px; }
+  .intro h1 { font-size: clamp(26px, 5.6vw, 40px); margin: 0 0 10px; max-width: 18ch; }
+  .intro p { margin: 0; color: var(--ink-2); max-width: 46ch; }
+
+  /* layout */
+  .grid { display: grid; gap: 28px; }
+  @media (min-width: 900px) {
+    .grid { grid-template-columns: 400px 1fr; align-items: start; }
+    .process { position: sticky; top: 16px; }
+  }
+
+  /* process */
+  .process {
+    background: #fff; border-radius: var(--radius-l); padding: 22px;
+    border: 1px solid var(--line);
+  }
+  .process .label { font-size: 15px; color: var(--ink-2); margin: 0; }
+  .process h2 { font-size: 26px; margin: 2px 0 4px; }
+  .process .station-name { font-size: 20px; font-weight: 700; margin: 0 0 16px; }
+  .path { width: 100%; height: 86px; display: block; margin-block: 6px 18px; }
+  .btn {
+    display: flex; justify-content: center; align-items: center; gap: 8px;
+    background: var(--go); color: var(--go-ink); text-decoration: none;
+    font-weight: 700; font-size: 18px; border-radius: var(--radius-s); padding: 14px 18px; border: 0;
+    font-family: inherit; cursor: pointer; transition: background .15s;
+  }
+  .btn:hover { background: #256a2f; }
+  .code { margin-block-start: 18px; padding-block-start: 16px; border-top: 1px dashed var(--line); }
+  .code label { font-weight: 700; display: block; margin-block-end: 8px; }
+  .code .row { display: flex; gap: 8px; }
+  .code input {
+    flex: 1; min-width: 0; font: inherit; font-size: 20px; letter-spacing: 6px; text-align: center;
+    border: 2px solid var(--line); border-radius: var(--radius-s); padding: 10px; color: var(--ink);
+  }
+  .code input:focus { outline: 3px solid var(--sky); border-color: var(--ink); }
+  .code .open { background: var(--ink); color: #fff; border: 0; border-radius: var(--radius-s); padding-inline: 18px; font: inherit; font-weight: 700; }
+  .pid { font-size: 14px; color: var(--ink-2); margin: 12px 0 0; }
+  .pid b { font-family: ui-monospace, monospace; letter-spacing: 1px; color: var(--ink); }
+
+  /* sections */
+  section h2.sec { font-size: 24px; margin: 0 0 4px; }
+  section .sub { color: var(--ink-2); margin: 0 0 14px; }
+  .needs { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  @media (min-width: 640px) { .needs { grid-template-columns: 1fr 1fr; column-gap: 28px; } }
+  .needs a {
+    display: grid; grid-template-columns: 40px 1fr 20px; gap: 12px; align-items: center;
+    padding-block: 14px; border-bottom: 1px solid var(--line); text-decoration: none;
+  }
+  .needs i { font-size: 30px; color: var(--ink); }
+  .needs b { display: block; font-size: 18px; }
+  .needs span { color: var(--ink-2); font-size: 15px; }
+  .needs .chev { font-size: 18px; color: var(--ink-2); }
+  .needs a:hover b { text-decoration: underline; text-underline-offset: 3px; }
+
+  .body-mind { margin-block-start: 36px; }
+  .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
+  .tiles a {
+    background: var(--sky); border-radius: var(--radius-s); padding: 14px; text-decoration: none;
+    display: flex; flex-direction: column; gap: 6px; min-height: 96px;
+  }
+  .tiles a:first-child { grid-column: span 2; background: var(--ink); color: #fff; flex-direction: row; align-items: center; gap: 14px; }
+  .tiles a:first-child span { color: #dfe5ff; }
+  .tiles i { font-size: 28px; }
+  .tiles b { font-size: 17px; }
+  .tiles span { font-size: 14px; color: var(--ink-2); }
+
+  .note { font-size: 14px; color: var(--ink-2); margin-block: 32px 10px; display: flex; gap: 8px; align-items: start; }
+
+  /* bottom nav */
+  nav.bottom {
+    position: fixed; inset-inline: 0; bottom: 0; background: #fff; border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  nav.bottom a { display: flex; flex-direction: column; align-items: center; font-size: 13px; text-decoration: none; color: var(--ink-2); gap: 2px; min-width: 60px; }
+  nav.bottom a i { font-size: 24px; }
+  nav.bottom a[aria-current] { color: var(--ink); font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="brand" href="#"><img src="../../assets/logo/go-on-mark.svg" alt="">GO ON</a>
+  <a class="help" href="#"><i class="ph-bold ph-lifebuoy" aria-hidden="true"></i>צריך עזרה עכשיו?</a>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <h1>תמיכה, מידע וכלים לצעירים בני 18 עד 44 שמתמודדים עם סרטן</h1>
+    <p>להמשיך קדימה, בדרך שלך. מהאבחנה ועד החזרה לעבודה, לימודים ושגרה.</p>
+  </div>
+
+  <div class="grid">
+    <aside class="process" aria-labelledby="proc-h">
+      <p class="label">התהליך האישי שלי</p>
+      <h2 id="proc-h">תחנה 3 מתוך 12</h2>
+      <p class="station-name">יעד קטן בדרך</p>
+      <svg class="path" viewBox="0 0 360 86" aria-hidden="true">
+        <path d="M350 60 C300 60 290 20 240 20 C190 20 180 64 130 64 C80 64 70 26 10 26" fill="none" stroke="#d6e3ef" stroke-width="6" stroke-linecap="round"/>
+        <path d="M350 60 C300 60 290 20 240 20" fill="none" stroke="#2e7d3a" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="350" cy="60" r="9" fill="#2e7d3a"/><circle cx="300" cy="44" r="9" fill="#2e7d3a"/>
+        <circle cx="240" cy="20" r="14" fill="#fff" stroke="#1b2a8f" stroke-width="5"/>
+        <g fill="#c4d4e4"><circle cx="190" cy="36" r="6"/><circle cx="150" cy="61" r="6"/><circle cx="110" cy="62" r="6"/><circle cx="72" cy="40" r="6"/><circle cx="40" cy="28" r="6"/><circle cx="10" cy="26" r="6"/></g>
+      </svg>
+      <a class="btn" href="#">להמשיך לתחנה 3 <i class="ph-bold ph-arrow-left" aria-hidden="true"></i></a>
+
+      <form class="code" onsubmit="return false">
+        <label for="code">קיבלת קוד מהמלווה לתחנה 4?</label>
+        <div class="row">
+          <input id="code" inputmode="numeric" maxlength="4" placeholder="····" autocomplete="off">
+          <button class="open" type="submit">פתיחה</button>
+        </div>
+        <p class="pid">מספר המשתתף שלך: <b>K7M‑4QP</b> · המלווה צריך אותו כדי לתת קוד</p>
+      </form>
+    </aside>
+
+    <div>
+      <section aria-labelledby="needs-h">
+        <h2 class="sec" id="needs-h">8 הצרכים שלנו</h2>
+        <p class="sub">מה שמעסיק צעירים שמתמודדים עם סרטן ומחלימים</p>
+        <ul class="needs">
+          <li><a href="#"><i class="ph-duotone ph-plant" aria-hidden="true"></i><div><b>פוריות ושימור פוריות</b><span>שאלות לצוות ותכנון סביב הטיפול</span></div><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+          <li><a href="#"><i class="ph-duotone ph-heart" aria-hidden="true"></i><div><b>זוגיות, אינטימיות ומיניות</b><span>דימוי גוף, שיח זוגי ודייטינג</span></div><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+          <li><a href="#"><i class="ph-duotone ph-briefcase" aria-hidden="true"></i><div><b>קריירה, תעסוקה ולימודים</b><span>חזרה הדרגתית לעבודה וללימודים</span></div><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+          <li><a href="#"><i class="ph-duotone ph-scales" aria-hidden="true"></i><div><b>זכויות ובירוקרטיה</b><span>ביטוח לאומי, ועדות ואובדן כושר</span></div><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+          <li><a href="#"><i class="ph-duotone ph-baby" aria-hidden="true"></i><div><b>הורות צעירה לצד המחלה</b><span>איך מדברים עם ילדים</span></div><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+          <li><a href="#"><i class="ph-duotone ph-hand-heart" aria-hidden="true"></i><div><b>בדידות ושייכות</b><span>מעגל תמיכה ובקשת עזרה</span></div><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+          <li><a href="#"><i class="ph-duotone ph-sun-horizon" aria-hidden="true"></i><div><b>חזרה לשגרה והיום שאחרי</b><span>שגרה חדשה, עבודה ועתיד</span></div><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+          <li><a href="#"><i class="ph-duotone ph-stethoscope" aria-hidden="true"></i><div><b>רפואה מותאמת גיל</b><span>שאלות לצוות וייעוץ גנטי</span></div><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+        </ul>
+      </section>
+
+      <section class="body-mind" aria-labelledby="bm-h">
+        <h2 class="sec" id="bm-h">גוף ונפש</h2>
+        <p class="sub">כלים לזמן הטיפול ולאחריו</p>
+        <div class="tiles">
+          <a href="#"><i class="ph-duotone ph-flower-lotus" aria-hidden="true"></i><div><b>נשימה ומיינדפולנס</b><br><span>3 דקות להירגע, עכשיו</span></div></a>
+          <a href="#"><i class="ph-duotone ph-bowl-food" aria-hidden="true"></i><b>תזונה</b><span>אנרגיה, חלבון ונוזלים</span></a>
+          <a href="#"><i class="ph-duotone ph-barbell" aria-hidden="true"></i><b>פיזיותרפיה</b><span>תנועה ושיקום</span></a>
+          <a href="#"><i class="ph-duotone ph-person-simple-walk" aria-hidden="true"></i><b>פעילות מתונה</b><span>הליכה וכוח בהדרגה</span></a>
+          <a href="#"><i class="ph-duotone ph-brain" aria-hidden="true"></i><b>אימון קוגניטיבי</b><span>זיכרון וקשב</span></a>
+        </div>
+      </section>
+
+      <p class="note"><i class="ph ph-device-mobile" aria-hidden="true"></i>כל מה שכתבת נשמר רק בטלפון הזה. המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי.</p>
+    </div>
+  </div>
+</main>
+
+<nav class="bottom" aria-label="ניווט ראשי">
+  <a href="#" aria-current="page"><i class="ph-fill ph-house" aria-hidden="true"></i>בית</a>
+  <a href="#"><i class="ph ph-path" aria-hidden="true"></i>התהליך</a>
+  <a href="#"><i class="ph ph-notebook" aria-hidden="true"></i>היומן</a>
+  <a href="#"><i class="ph ph-toolbox" aria-hidden="true"></i>כלים</a>
+  <a href="#"><i class="ph ph-chart-line-up" aria-hidden="true"></i>מעקב</a>
+</nav>
+</body>
+</html>

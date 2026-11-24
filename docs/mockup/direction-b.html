@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO ON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  :root {
+    --ink: #1b2a8f;
+    --ink-2: #4b5689;
+    --paper: #ffffff;
+    --sky: #dceefb;
+    --sky-2: #c3e1f6;
+    --line: #d6e3ef;
+    --road: #2e7d3a;
+    --go: #2e7d3a;
+    --sun: #f2b632;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Assistant, system-ui, sans-serif; font-size: 17px; line-height: 1.55;
+    padding-block-end: 84px;
+  }
+  .display { font-family: Fredoka, Assistant, sans-serif; font-weight: 600; line-height: 1.08; }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin-inline: auto; padding-inline: 20px; }
+
+  /* sky band: the participant's place on the road */
+  .sky { background: var(--sky); overflow: hidden; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 22px; }
+  .brand img { width: 38px; height: 38px; }
+  .help { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; text-decoration: none; background: var(--paper); border-radius: 999px; padding: 7px 14px; }
+
+  .here { padding-block: 22px 0; }
+  .here .where { margin: 0; font-weight: 600; color: var(--ink-2); }
+  .here h1 { font-size: clamp(44px, 13vw, 96px); margin: 4px 0 0; letter-spacing: -.5px; }
+  .here .goal { margin: 10px 0 0; max-width: 34ch; font-size: 18px; }
+
+  .road { display: block; width: 100%; height: auto; margin-block-start: 10px; }
+  .road .lbl { font: 600 13px Assistant, sans-serif; fill: var(--ink-2); }
+
+  /* actions sit on the road's edge */
+  .actions { background: var(--road); padding-block: 0 22px; }
+  .actions .wrap { display: grid; gap: 12px; }
+  @media (min-width: 760px) { .actions .wrap { grid-template-columns: auto 1fr; align-items: center; gap: 28px; } }
+  .btn {
+    display: inline-flex; justify-content: center; align-items: center; gap: 10px;
+    background: var(--paper); color: var(--go); text-decoration: none; font-weight: 700; font-size: 19px;
+    border-radius: 14px; padding: 15px 24px; transition: transform .15s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .unlock { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; color: #fff; }
+  .unlock label { font-weight: 700; }
+  .unlock .row { display: flex; gap: 8px; }
+  .unlock input {
+    width: 7.5em; font: 700 20px ui-monospace, monospace; letter-spacing: 6px; text-align: center;
+    border: 2px solid rgba(255,255,255,.7); background: rgba(255,255,255,.14); color: #fff; border-radius: 12px; padding: 9px;
+  }
+  .unlock input::placeholder { color: rgba(255,255,255,.75); }
+  .unlock input:focus { outline: 3px solid var(--sun); }
+  .unlock button { font: inherit; font-weight: 700; background: var(--ink); color: #fff; border: 0; border-radius: 12px; padding-inline: 18px; }
+  .unlock small { flex-basis: 100%; opacity: .92; font-size: 14px; }
+
+  /* needs: a typographic index, not cards */
+  .needs { padding-block: 40px 8px; }
+  .needs h2, .minute h2 { font-size: 30px; margin: 0 0 6px; }
+  .needs .sub { margin: 0 0 18px; color: var(--ink-2); }
+  .needs ul { list-style: none; padding: 0; margin: 0; columns: 1; }
+  @media (min-width: 760px) { .needs ul { columns: 2; column-gap: 48px; } }
+  .needs li { break-inside: avoid; }
+  .needs a {
+    display: flex; gap: 14px; align-items: baseline; text-decoration: none;
+    padding-block: 12px; border-bottom: 1px solid var(--line);
+  }
+  .needs a i { font-size: 26px; flex: none; transform: translateY(5px); }
+  .needs a b { font-family: Fredoka, Assistant, sans-serif; font-weight: 500; font-size: 22px; display: block; line-height: 1.25; }
+  .needs a span { color: var(--ink-2); font-size: 15px; }
+  .needs a:hover b { color: var(--go); }
+
+  /* a minute for you: practices with their real length */
+  .minute { padding-block: 36px 8px; }
+  .minute .sub { margin: 0 0 16px; color: var(--ink-2); }
+  .strip { display: flex; gap: 12px; overflow-x: auto; padding-block-end: 8px; scroll-snap-type: x mandatory; }
+  .strip a {
+    flex: 0 0 auto; scroll-snap-align: start; text-decoration: none;
+    border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; width: 200px;
+    display: grid; gap: 4px; transition: border-color .15s;
+  }
+  .strip a:hover { border-color: var(--ink); }
+  .strip i { font-size: 30px; }
+  .strip b { font-size: 18px; }
+  .strip .len { font-size: 14px; color: var(--ink-2); }
+  .more { display: inline-block; margin-block-start: 10px; font-weight: 700; }
+
+  .note { font-size: 14px; color: var(--ink-2); padding-block: 28px 8px; }
+
+  nav.bottom {
+    position: fixed; inset-inline: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  nav.bottom a { display: flex; flex-direction: column; align-items: center; font-size: 13px; text-decoration: none; color: var(--ink-2); min-width: 60px; }
+  nav.bottom i { font-size: 24px; }
+  nav.bottom a[aria-current] { color: var(--ink); font-weight: 700; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="sky">
+  <header class="wrap top">
+    <a class="brand display" href="#"><img src="../../assets/logo/go-on-mark.svg" alt="">GO ON</a>
+    <a class="help" href="#"><i class="ph-bold ph-lifebuoy" aria-hidden="true"></i>צריך עזרה עכשיו?</a>
+  </header>
+
+  <main>
+    <div class="wrap here">
+      <p class="where">התחנה שלך: 3 מתוך 12</p>
+      <h1 class="display">יעד קטן בדרך</h1>
+      <p class="goal">לבחור צעד אחד שאפשר לעשות השבוע, בקצב שלך.</p>
+    </div>
+
+    <!-- the road: right = start (station 1), left = station 12 and the sun -->
+    <svg class="road" viewBox="0 0 1200 230" preserveAspectRatio="xMidYMax slice" aria-label="ההתקדמות שלך: תחנות 1 ו־2 הושלמו, את/ה בתחנה 3, עוד 9 תחנות">
+      <circle cx="70" cy="70" r="34" fill="#f2b632"/>
+      <path d="M1220 230 C1100 200 1060 120 940 128 C820 136 760 190 640 180 C520 170 470 110 360 112 C250 114 200 150 60 150 L60 230 Z" fill="#c3e1f6"/>
+      <path d="M1220 236 C1100 206 1060 130 940 138 C820 146 760 200 640 190 C520 180 470 120 360 122 C250 124 200 160 40 160" fill="none" stroke="#2e7d3a" stroke-width="46" stroke-linecap="round"/>
+      <path d="M1220 236 C1100 206 1060 130 940 138 C820 146 760 200 640 190 C520 180 470 120 360 122 C250 124 200 160 40 160" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="14 16" opacity=".7"/>
+      <rect x="0" y="200" width="1200" height="40" fill="#2e7d3a"/>
+      <g>
+        <circle cx="1140" cy="214" r="10" fill="#fff"/>
+        <circle cx="1040" cy="160" r="10" fill="#fff"/>
+        <circle cx="940" cy="138" r="18" fill="#1b2a8f" stroke="#fff" stroke-width="6"/>
+        <g fill="#fff" opacity=".55">
+          <circle cx="840" cy="146" r="7"/><circle cx="740" cy="182" r="7"/><circle cx="640" cy="190" r="7"/>
+          <circle cx="540" cy="176" r="7"/><circle cx="450" cy="134" r="7"/><circle cx="360" cy="122" r="7"/>
+          <circle cx="260" cy="134" r="7"/><circle cx="160" cy="154" r="7"/><circle cx="60" cy="160" r="7"/>
+        </g>
+      </g>
+    </svg>
+  </main>
+</div>
+
+<div class="actions">
+  <div class="wrap">
+    <a class="btn" href="#">להמשיך בתחנה 3 <i class="ph-bold ph-arrow-left" aria-hidden="true"></i></a>
+    <form class="unlock" onsubmit="return false">
+      <label for="code">קוד מהמלווה לתחנה 4</label>
+      <span class="row"><input id="code" inputmode="numeric" maxlength="4" placeholder="····" autocomplete="off"><button type="submit">פתיחה</button></span>
+      <small>מספר המשתתף שלך: <b>K7M‑4QP</b>. המלווה צריך אותו כדי לתת קוד.</small>
+    </form>
+  </div>
+</div>
+
+<section class="wrap needs" aria-labelledby="needs-h">
+  <h2 class="display" id="needs-h">מה מעסיק אותך עכשיו?</h2>
+  <p class="sub">8 הצרכים של צעירים שמתמודדים עם סרטן ומחלימים</p>
+  <ul>
+    <li><a href="#"><i class="ph-duotone ph-plant" aria-hidden="true"></i><div><b>פוריות ושימור פוריות</b><span>שאלות לצוות ותכנון סביב הטיפול</span></div></a></li>
+    <li><a href="#"><i class="ph-duotone ph-heart" aria-hidden="true"></i><div><b>זוגיות, אינטימיות ומיניות</b><span>דימוי גוף, שיח זוגי ודייטינג</span></div></a></li>
+    <li><a href="#"><i class="ph-duotone ph-briefcase" aria-hidden="true"></i><div><b>עבודה ולימודים</b><span>חזרה הדרגתית, בקצב שמתאים לגוף</span></div></a></li>
+    <li><a href="#"><i class="ph-duotone ph-scales" aria-hidden="true"></i><div><b>זכויות ובירוקרטיה</b><span>ביטוח לאומי, ועדות ואובדן כושר</span></div></a></li>
+    <li><a href="#"><i class="ph-duotone ph-baby" aria-hidden="true"></i><div><b>הורות לצד המחלה</b><span>איך מדברים עם ילדים</span></div></a></li>
+    <li><a href="#"><i class="ph-duotone ph-hand-heart" aria-hidden="true"></i><div><b>בדידות ושייכות</b><span>מעגל תמיכה ובקשת עזרה</span></div></a></li>
+    <li><a href="#"><i class="ph-duotone ph-sun-horizon" aria-hidden="true"></i><div><b>היום שאחרי</b><span>שגרה חדשה ועתיד</span></div></a></li>
+    <li><a href="#"><i class="ph-duotone ph-stethoscope" aria-hidden="true"></i><div><b>רפואה מותאמת גיל</b><span>שאלות לצוות וייעוץ גנטי</span></div></a></li>
+  </ul>
+</section>
+
+<section class="wrap minute" aria-labelledby="min-h">
+  <h2 class="display" id="min-h">דקה בשבילך</h2>
+  <p class="sub">תרגול קצר לגוף ולראש, לימים עמוסים</p>
+  <div class="strip">
+    <a href="#"><i class="ph-duotone ph-flower-lotus" aria-hidden="true"></i><b>נשימה מרגיעה</b><span class="len">3 דקות</span></a>
+    <a href="#"><i class="ph-duotone ph-person-simple-walk" aria-hidden="true"></i><b>הליכה קלה</b><span class="len">10 דקות, בחוץ או בבית</span></a>
+    <a href="#"><i class="ph-duotone ph-drop" aria-hidden="true"></i><b>כמה לשתות היום?</b><span class="len">מחשבון, חצי דקה</span></a>
+    <a href="#"><i class="ph-duotone ph-brain" aria-hidden="true"></i><b>משחק זיכרון</b><span class="len">5 דקות</span></a>
+    <a href="#"><i class="ph-duotone ph-barbell" aria-hidden="true"></i><b>קימה מכיסא</b><span class="len">2 דקות</span></a>
+  </div>
+  <a class="more" href="#">כל הנושאים של גוף ונפש</a>
+</section>
+
+<p class="wrap note">כל מה שכתבת נשמר רק בטלפון הזה. המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי.</p>
+
+<nav class="bottom" aria-label="ניווט ראשי">
+  <a href="#" aria-current="page"><i class="ph-fill ph-house" aria-hidden="true"></i>בית</a>
+  <a href="#"><i class="ph ph-path" aria-hidden="true"></i>התהליך</a>
+  <a href="#"><i class="ph ph-notebook" aria-hidden="true"></i>היומן</a>
+  <a href="#"><i class="ph ph-toolbox" aria-hidden="true"></i>כלים</a>
+  <a href="#"><i class="ph ph-chart-line-up" aria-hidden="true"></i>מעקב</a>
+</nav>
+</body>
+</html>
