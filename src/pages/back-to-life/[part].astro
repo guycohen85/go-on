@@ -1,0 +1,28 @@
+---
+// Introduction, before we start, baseline and appendices: topic pages whose sections live in
+// src/content/topics/back-to-life-<part>/. Titles and icons come from the hub content.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import TopicPage from '../../components/TopicPage.astro';
+
+export async function getStaticPaths() {
+  const hub = (await getEntry('backToLife', 'hub'))!.data;
+  return [...hub.start.items, ...hub.more.items].map((item) => ({
+    params: { part: item.href.replace('/back-to-life/', '') },
+    props: { item, hubTitle: hub.title },
+  }));
+}
+
+const { item, hubTitle } = Astro.props;
+const { part } = Astro.params;
+---
+<Base title={item.title} description={item.summary} current="back-to-life">
+  <TopicPage
+    topic={`back-to-life-${part}`}
+    title={item.title}
+    summary={item.summary}
+    icon={item.icon}
+    color={item.color}
+    back={{ href: '/back-to-life', label: hubTitle }}
+  />
+</Base>

@@ -1,0 +1,117 @@
+---
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import Tool from '../../../components/Tool.astro';
+import Worksheet from '../../../components/islands/Worksheet';
+import StationDone from '../../../components/islands/StationDone';
+import Feedback from '../../../components/islands/Feedback';
+import { url } from '../../../lib/url';
+
+export async function getStaticPaths() {
+  const stations = (await getCollection('stations')).sort((a, b) => a.data.n - b.data.n);
+  return stations.map((station, i) => ({
+    params: { n: String(station.data.n) },
+    props: { station, prev: stations[i - 1], next: stations[i + 1], total: stations.length },
+  }));
+}
+
+interface Props {
+  station: CollectionEntry<'stations'>;
+  prev?: CollectionEntry<'stations'>;
+  next?: CollectionEntry<'stations'>;
+  total: number;
+}
+
+const { station, prev, next, total } = Astro.props;
+const s = station.data;
+const hub = (await getEntry('backToLife', 'hub'))!.data;
+const draftLabel = typeof s.draft === 'string' ? s.draft : '[טיוטה מהאפיון – לבדיקה]';
+const fields = s.worksheet.map((f) => ({ ...f, type: 'textarea' as const }));
+---
+<Base title={`תחנה ${s.n}: ${s.title}`} description={s.goal} current="back-to-life">
+  <article class="page pt-6">
+    <a
+      href={url('/back-to-life')}
+      class="-mt-2 mb-3 inline-flex min-h-11 items-center gap-1.5 text-small font-semibold text-ink-2 no-underline hover:text-ink"
+    >
+      <Icon name="arrow-right" weight="bold" />
+      {hub.title}
+    </a>
+
+    <header>
+      <p class="text-small font-bold text-ink-2">תחנה {s.n} מתוך {total}</p>
+      <h1 class="mt-1 font-display text-h2 font-semibold">{s.title}</h1>
+      <p class="mt-2 max-w-prose text-lead">{s.goal}</p>
+    </header>
+
+    {s.draft && <p class="draft mt-4">{draftLabel}</p>}
+
+    <div class="mt-6 grid max-w-prose gap-8">
+      <section aria-labelledby="why-h">
+        <h2 id="why-h" class="font-display text-card font-medium">למה זה חשוב</h2>
+        <p class="mt-2">{s.rationale}</p>
+      </section>
+
+      <section aria-labelledby="aims-h" class="prose-go">
+        <h2 id="aims-h" class="!mt-0">מה נרצה להשיג</h2>
+        <ul>{s.objectives.map((o) => <li>{o}</li>)}</ul>
+      </section>
+
+      <section aria-labelledby="how-h" class="prose-go">
+        <h2 id="how-h" class="!mt-0">איך עוברים על התחנה</h2>
+        <ol>{s.process.map((p) => <li>{p}</li>)}</ol>
+      </section>
+    </div>
+
+    {
+      s.baselineAgain && (
+        <section aria-labelledby="again-h" class="mt-8">
+          <h2 id="again-h" class="font-display text-card font-medium">מדרגים מחדש את מד הפתיחה</h2>
+          <p class="mt-2 max-w-prose text-ink-2">ליד כל תחום מופיע הדירוג מהפתיחה. משווים בין "אז" ל"היום" בלי לשפוט.</p>
+          <Tool type="baseline" data={{ mode: 'again' }} />
+        </section>
+      )
+    }
+
+    <section aria-labelledby="sheet-h" class="mt-8">
+      <h2 id="sheet-h" class="font-display text-card font-medium">דף עבודה: שאלות להתבוננות</h2>
+      <Worksheet client:visible id={`station-${s.n}`} fields={fields} />
+    </section>
+
+    <section aria-labelledby="task-h" class="mt-8 flex gap-3.5 rounded-card border-2 border-line p-4">
+      <span class="grid size-12 shrink-0 place-items-center rounded-tile bg-t-green text-icon-md text-i-green">
+        <Icon name="calendar-check" weight="duotone" />
+      </span>
+      <div>
+        <h2 id="task-h" class="font-display text-card font-medium">משימה לשבוע</h2>
+        <p class="mt-1">{s.task}</p>
+      </div>
+    </section>
+
+    <StationDone client:visible station={s.n} total={total} />
+
+    <nav aria-label="תחנות" class="mt-6 flex flex-wrap justify-between gap-3 text-small font-semibold">
+      {
+        prev ? (
+          <a href={url(`/back-to-life/station/${prev.data.n}`)} class="inline-flex min-h-11 items-center gap-1.5">
+            <Icon name="arrow-right" weight="bold" />
+            תחנה {prev.data.n}: {prev.data.title}
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next && (
+          <a href={url(`/back-to-life/station/${next.data.n}`)} class="inline-flex min-h-11 items-center gap-1.5">
+            תחנה {next.data.n}: {next.data.title}
+            <Icon name="arrow-left" weight="bold" />
+          </a>
+        )
+      }
+    </nav>
+
+    <Feedback client:visible page={`back-to-life/station-${s.n}`} />
+  </article>
+</Base>

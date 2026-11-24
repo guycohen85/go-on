@@ -104,4 +104,45 @@ const meditations = defineCollection({
   }),
 });
 
-export const collections = { home, needs, bodyMind, myTools, sections, meditations };
+/** One station of "חוזרים לחיים": src/content/stations/<nn>.md (frontmatter only). */
+const stations = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/stations' }),
+  schema: z.object({
+    n: z.number().int().min(1),
+    title: z.string(),
+    goal: z.string(),
+    rationale: z.string(),
+    objectives: z.array(z.string()),
+    process: z.array(z.string()),
+    /** Worksheet fields. Keep each id stable once published: saved answers are keyed by it. */
+    worksheet: z.array(z.object({ id: z.string(), label: z.string() })),
+    task: z.string(),
+    /** Show the baseline gauge again to re-rate it next to the first rating. */
+    baselineAgain: z.boolean().default(false),
+    draft: z.union([z.boolean(), z.string()]).default(false),
+  }),
+});
+
+const link = z.object({ title: z.string(), summary: z.string(), icon: z.string(), color, href: z.string() });
+
+/** Texts of the "חוזרים לחיים" hub and the baseline gauge. */
+const backToLife = defineCollection({
+  loader: file('src/content/back-to-life.json'),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    lead: z.string(),
+    note: z.string(),
+    noteDraft: z.string().optional(),
+    start: z.object({ heading: z.string(), items: z.array(link) }),
+    stations: z.object({ heading: z.string(), subtitle: z.string() }),
+    more: z.object({ heading: z.string(), items: z.array(link) }),
+    baseline: z.object({
+      domains: z.array(z.string()),
+      scale: z.string(),
+      scaleDraft: z.string().optional(),
+    }),
+  }),
+});
+
+export const collections = { home, needs, bodyMind, myTools, sections, meditations, stations, backToLife };
