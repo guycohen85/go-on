@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO ON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  :root {
+    --ink: #1b2a8f;
+    --ink-2: #4b5689;
+    --paper: #ffffff;
+    --sky: #e6f4fd;
+    --sky-2: #cfe9fb;
+    --line: #dbe6f0;
+    --road: #5cb84a;
+    --go: #2e7d3a;
+    --go-hover: #256a2f;
+    --sun: #f7c548;
+    --sun-ray: #f5d36b;
+    /* the ribbon: one hue per station */
+    --s1: #e5484d; --s2: #f0603a; --s3: #f5921e; --s4: #f2b12c; --s5: #d9bd2a; --s6: #8cc63f;
+    --s7: #36a86b; --s8: #1fb5a8; --s9: #22a6e0; --s10: #3563d6; --s11: #5b4fd6; --s12: #8e4fd0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Assistant, system-ui, sans-serif; font-size: 17px; line-height: 1.55;
+    padding-block-end: 90px;
+  }
+  h1, h2, .brand { font-family: Fredoka, Assistant, sans-serif; line-height: 1.1; margin: 0; }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin-inline: auto; padding-inline: 18px; }
+
+  .top { display: flex; justify-content: space-between; align-items: center; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 26px; font-weight: 700; }
+  .brand img { width: 42px; height: 42px; }
+  .help { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; text-decoration: none; color: var(--ink); background: var(--sky); border-radius: 999px; padding: 7px 14px; }
+
+  /* hero: framed like the app icon, ending in the road and the sun */
+  .hero {
+    background: var(--sky); border: 4px solid var(--ink); border-radius: 34px; overflow: hidden;
+    display: grid; grid-template-columns: minmax(0, 1fr);
+  }
+  .hero .inner { padding: 26px 22px 6px; }
+  @media (min-width: 860px) { .hero .inner { padding: 44px 52px 6px; } }
+  .hero .where { margin: 0 0 6px; font-weight: 700; color: var(--ink-2); }
+  .hero h1 { font-weight: 700; font-size: clamp(42px, 10vw, 80px); letter-spacing: -.5px; }
+  .hero .goal { font-size: 19px; margin: 12px 0 0; max-width: 32ch; }
+
+  /* ribbon progress */
+  .ribbon { margin-block: 26px 6px; max-width: 620px; }
+  .ribbon ol { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; }
+  .ribbon li { height: 16px; border-radius: 4px; background: var(--c); transform: skewX(-18deg); position: relative; }
+  .ribbon li.todo { background: color-mix(in oklab, var(--c) 24%, white); }
+  .ribbon li.now { height: 26px; margin-block-start: -5px; box-shadow: 0 0 0 3px var(--paper), 0 0 0 6px var(--ink); }
+  .ribbon .ends { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); margin-block-start: 8px; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: end; margin-block-start: 22px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; background: var(--go); color: #fff; text-decoration: none;
+    font-weight: 700; font-size: 19px; border-radius: 14px; padding: 14px 24px; transition: background .15s;
+  }
+  .btn:hover { background: var(--go-hover); }
+  .code label { display: block; font-weight: 700; margin-block-end: 6px; font-size: 16px; }
+  .code .row { display: flex; gap: 8px; }
+  .code input {
+    width: 8.5em; min-width: 0; font: 700 20px ui-monospace, monospace; letter-spacing: 7px; text-align: center; color: var(--ink);
+    background: var(--paper); border: 2px solid var(--sky-2); border-radius: 12px; padding: 9px;
+  }
+  .code input:focus { outline: none; border-color: var(--ink); }
+  .code button { font: inherit; font-weight: 700; background: var(--ink); color: #fff; border: 0; border-radius: 12px; padding-inline: 18px; cursor: pointer; }
+  .pid { font-size: 14px; color: var(--ink-2); margin: 12px 0 0; }
+
+  .land { display: block; width: 100%; height: clamp(150px, 24vw, 240px); margin-block-start: 0; }
+
+  /* topics */
+  .needs { padding-block: 48px 8px; }
+  .needs h2, .bm h2 { font-size: clamp(28px, 5vw, 36px); font-weight: 600; }
+  .sub { color: var(--ink-2); margin: 6px 0 20px; }
+  .needs ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 700px) { .needs ul { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px; } }
+  .needs a { display: flex; gap: 14px; align-items: center; padding-block: 13px; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .needs .ic { flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; color: var(--ink); background: color-mix(in oklab, var(--c) 20%, white); }
+  .needs b { display: block; font-size: 18px; line-height: 1.3; }
+  .needs span { font-size: 15px; color: var(--ink-2); }
+  .needs a:hover b { text-decoration: underline; text-underline-offset: 4px; }
+
+  .bm { padding-block: 44px 8px; }
+  .bm .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  @media (min-width: 700px) { .bm .row { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); } }
+  .bm a { text-decoration: none; border-radius: 20px; padding: 18px 20px; background: var(--sky); display: flex; flex-direction: column; gap: 4px; }
+  .bm a i { font-size: 30px; }
+  .bm a b { font-size: 19px; }
+  .bm a span { color: var(--ink-2); font-size: 15px; }
+  .bm a.main { background: var(--ink); color: #fff; }
+  .bm a.main span { color: #d5dbff; }
+  .bm .more { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-block-start: 14px; }
+  .bm .more a { background: none; padding: 0; flex-direction: row; align-items: center; gap: 6px; font-weight: 700; border-radius: 0; }
+  .bm .more a i { font-size: 20px; }
+
+  footer { margin-block-start: 44px; }
+  .stripe { display: flex; height: 6px; }
+  .stripe span { flex: 1; }
+  .note { font-size: 14px; color: var(--ink-2); padding-block: 14px; margin-block: 0; }
+
+  nav.bottom {
+    position: fixed; inset-inline: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  nav.bottom a { display: flex; flex-direction: column; align-items: center; font-size: 13px; text-decoration: none; color: var(--ink-2); min-width: 56px; }
+  nav.bottom i { font-size: 24px; }
+  nav.bottom a[aria-current] { color: var(--ink); font-weight: 700; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--s3); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="brand" href="#"><img src="../../assets/logo/go-on-mark.svg" alt="">GO ON</a>
+  <a class="help" href="#"><i class="ph-bold ph-lifebuoy" aria-hidden="true"></i>צריך עזרה עכשיו?</a>
+</header>
+
+<main class="wrap">
+  <section class="hero" aria-labelledby="h1">
+    <div class="inner">
+      <p class="where">התחנה שלך: 3 מתוך 12</p>
+      <h1 id="h1">יעד קטן בדרך</h1>
+      <p class="goal">לבחור צעד אחד שאפשר לעשות השבוע, בקצב שלך.</p>
+
+      <div class="ribbon" role="img" aria-label="תחנות 1 ו־2 הושלמו, את/ה בתחנה 3, עוד 9 תחנות">
+        <ol>
+          <li style="--c:var(--s1)"></li><li style="--c:var(--s2)"></li><li class="now" style="--c:var(--s3)"></li>
+          <li class="todo" style="--c:var(--s4)"></li><li class="todo" style="--c:var(--s5)"></li><li class="todo" style="--c:var(--s6)"></li>
+          <li class="todo" style="--c:var(--s7)"></li><li class="todo" style="--c:var(--s8)"></li><li class="todo" style="--c:var(--s9)"></li>
+          <li class="todo" style="--c:var(--s10)"></li><li class="todo" style="--c:var(--s11)"></li><li class="todo" style="--c:var(--s12)"></li>
+        </ol>
+        <div class="ends" aria-hidden="true"><span>נקודת הפתיחה</span><span>מהלב קדימה</span></div>
+      </div>
+
+      <div class="actions">
+        <a class="btn" href="#">להמשיך בתחנה 3 <i class="ph-bold ph-arrow-left" aria-hidden="true"></i></a>
+        <form class="code" onsubmit="return false">
+          <label for="code">קוד מהמלווה לתחנה 4</label>
+          <div class="row"><input id="code" inputmode="numeric" maxlength="4" placeholder="····" autocomplete="off"><button type="submit">פתיחה</button></div>
+        </form>
+      </div>
+      <p class="pid">מספר המשתתף שלך: <b>K7M‑4QP</b>. המלווה צריך אותו כדי לתת קוד.</p>
+    </div>
+
+    <!-- the road from the logo, winding toward the sun -->
+    <svg class="land" viewBox="0 0 1000 240" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <g transform="translate(310 152)">
+        <g stroke="var(--sun-ray)" stroke-width="7" stroke-linecap="round">
+          <line x1="0" y1="-62" x2="0" y2="-88"/><line x1="-44" y1="-44" x2="-62" y2="-62"/><line x1="44" y1="-44" x2="62" y2="-62"/>
+          <line x1="-62" y1="0" x2="-88" y2="0"/><line x1="62" y1="0" x2="88" y2="0"/>
+          <line x1="-24" y1="-57" x2="-33" y2="-81"/><line x1="24" y1="-57" x2="33" y2="-81"/><line x1="-57" y1="-24" x2="-81" y2="-33"/><line x1="57" y1="-24" x2="81" y2="-33"/>
+        </g>
+        <circle r="46" fill="var(--sun)"/>
+      </g>
+      <path d="M-20 162 C200 146 420 150 600 156 C780 162 900 146 1020 136 L1020 240 L-20 240 Z" fill="#a9dc8f"/>
+      <path d="M992.6 261.6 L981.4 259.1 L969.7 256.5 L957.9 254.0 L945.9 251.6 L933.8 249.3 L921.6 247.0 L909.3 244.8 L897.0 242.7 L884.5 240.6 L872.1 238.5 L859.7 236.5 L847.2 234.6 L834.8 232.7 L822.4 230.8 L810.1 229.0 L797.8 227.2 L785.7 225.5 L773.7 223.8 L761.8 222.1 L750.1 220.5 L738.5 218.9 L727.2 217.3 L716.1 215.7 L705.2 214.2 L694.6 212.7 L684.3 211.2 L674.3 209.8 L664.7 208.3 L655.3 206.9 L646.4 205.5 L637.9 204.2 L629.8 202.8 L622.1 201.5 L615.0 200.2 L608.3 198.9 L602.3 197.6 L596.8 196.4 L592.0 195.3 L587.9 194.3 L584.7 193.4 L582.3 192.7 L581.1 192.5 L581.1 193.0 L582.7 194.7 L585.6 198.9 L588.6 206.6 L589.1 217.0 L586.2 226.1 L582.5 231.2 L579.9 233.2 L577.8 234.3 L578.2 233.7 L579.0 232.9 L580.2 232.1 L581.6 231.1 L583.4 230.2 L585.4 229.2 L587.6 228.2 L589.9 227.2 L592.5 226.2 L595.2 225.2 L598.0 224.2 L600.9 223.3 L603.9 222.3 L607.0 221.4 L610.2 220.5 L613.3 219.6 L616.5 218.7 L619.8 217.8 L623.0 217.0 L626.2 216.1 L629.4 215.3 L632.6 214.5 L635.7 213.7 L638.7 212.8 L641.7 212.0 L644.7 211.2 L647.5 210.4 L650.3 209.5 L652.9 208.7 L655.5 207.8 L658.0 206.9 L660.4 205.9 L662.8 204.9 L665.2 203.8 L667.6 202.4 L670.3 200.8 L673.3 198.5 L676.7 194.9 L680.0 189.0 L681.3 180.8 L679.2 173.2 L675.8 168.3 L672.5 165.5 L669.5 163.8 L666.8 162.6 L664.0 161.6 L661.1 160.7 L658.1 159.9 L654.5 159.1 L650.8 158.4 L647.3 157.9 L643.8 157.3 L640.1 156.8 L636.4 156.4 L632.6 155.9 L628.7 155.5 L624.7 155.1 L620.7 154.7 L616.5 154.4 L612.4 154.1 L608.1 153.8 L603.8 153.5 L599.4 153.2 L595.0 153.0 L590.5 152.8 L585.9 152.6 L581.3 152.4 L576.7 152.2 L572.0 152.1 L567.3 151.9 L562.5 151.8 L557.7 151.7 L552.9 151.6 L548.1 151.5 L543.2 151.5 L538.3 151.4 L533.5 151.4 L528.6 151.4 L523.7 151.4 L518.7 151.4 L513.8 151.4 L508.9 151.4 L504.0 151.5 L499.2 151.5 L494.3 151.6 L489.5 151.6 L484.6 151.7 L479.9 151.8 L475.1 151.9 L470.4 152.0 L465.7 152.1 L461.0 152.2 L456.4 152.3 L451.9 152.4 L447.4 152.6 L443.0 152.7 L438.6 152.8 L434.3 152.9 L430.0 153.0 L430.0 157.0 L434.2 157.2 L438.5 157.5 L442.9 157.7 L447.3 158.0 L451.8 158.4 L456.3 158.7 L460.9 159.0 L465.5 159.4 L470.1 159.8 L474.8 160.1 L479.6 160.5 L484.3 161.0 L489.1 161.4 L493.9 161.8 L498.7 162.3 L503.5 162.8 L508.4 163.3 L513.2 163.8 L518.1 164.3 L522.9 164.8 L527.7 165.4 L532.6 165.9 L537.4 166.5 L542.2 167.1 L546.9 167.7 L551.7 168.4 L556.4 169.0 L561.0 169.7 L565.7 170.4 L570.2 171.1 L574.8 171.8 L579.3 172.5 L583.7 173.3 L588.1 174.0 L592.4 174.8 L596.6 175.7 L600.8 176.5 L604.8 177.3 L608.8 178.2 L612.7 179.1 L616.6 180.0 L620.3 180.9 L623.9 181.9 L627.4 182.8 L630.8 183.8 L634.0 184.8 L637.2 185.9 L640.2 186.9 L643.1 187.9 L645.5 188.9 L647.6 189.9 L649.4 190.9 L650.7 191.8 L651.3 192.5 L651.3 192.8 L650.5 192.6 L648.7 191.2 L646.1 187.8 L644.4 181.5 L645.4 174.5 L648.0 169.8 L650.1 167.4 L651.3 166.3 L651.6 165.7 L651.4 165.5 L650.6 165.4 L649.5 165.4 L648.0 165.4 L646.2 165.5 L644.2 165.6 L642.0 165.7 L639.5 165.8 L636.9 165.9 L634.2 166.0 L631.3 166.2 L628.2 166.3 L625.1 166.5 L621.8 166.6 L618.5 166.8 L615.1 167.0 L611.6 167.2 L608.1 167.5 L604.5 167.7 L600.9 168.0 L597.2 168.3 L593.6 168.7 L589.9 169.1 L586.2 169.5 L582.5 169.9 L578.9 170.5 L575.2 171.0 L571.6 171.7 L567.9 172.4 L564.3 173.2 L560.7 174.1 L557.1 175.1 L553.4 176.3 L549.7 177.7 L546.0 179.3 L540.1 182.8 L533.5 188.6 L527.2 197.5 L523.2 210.3 L524.0 224.4 L528.8 235.8 L534.7 243.6 L540.6 248.9 L546.2 253.0 L551.8 256.3 L557.4 259.2 L563.3 261.8 L569.4 264.3 L575.8 266.7 L582.6 269.0 L589.8 271.3 L597.3 273.5 L605.2 275.7 L613.5 277.9 L622.1 280.1 L631.0 282.3 L640.3 284.5 L649.9 286.7 L659.8 288.9 L669.9 291.1 L680.4 293.3 L691.0 295.5 L701.9 297.8 L713.0 300.1 L724.2 302.4 L735.7 304.7 L747.3 307.0 L759.0 309.4 L770.8 311.8 L782.7 314.2 L794.6 316.7 L806.6 319.2 L818.6 321.7 L830.6 324.3 L842.7 326.9 L854.6 329.5 L866.5 332.2 L878.3 334.9 L890.0 337.7 L901.6 340.5 L913.0 343.4 L924.3 346.3 L935.4 349.2 L946.2 352.2 L956.8 355.2 L967.4 358.4 Z" fill="var(--road)"/>
+      <path d="M980.0 310.0 L969.1 307.2 L957.9 304.4 L946.6 301.6 L935.1 299.0 L923.4 296.3 L911.6 293.8 L899.7 291.3 L887.6 288.8 L875.5 286.4 L863.4 284.0 L851.2 281.7 L838.9 279.4 L826.7 277.2 L814.5 275.0 L802.3 272.8 L790.2 270.7 L778.2 268.6 L766.3 266.6 L754.5 264.6 L742.9 262.6 L731.4 260.6 L720.1 258.7 L709.0 256.8 L698.1 254.9 L687.5 253.0 L677.1 251.1 L667.1 249.3 L657.3 247.5 L647.8 245.7 L638.7 243.9 L630.0 242.1 L621.6 240.4 L613.7 238.6 L606.1 236.8 L599.1 235.1 L592.4 233.3 L586.3 231.6 L580.7 229.8 L575.6 228.1 L571.0 226.3 L567.1 224.5 L563.7 222.7 L560.9 221.0 L558.7 219.2 L557.2 217.3 L556.3 215.5 L556.2 213.7 L556.7 211.8 L558.0 209.9 L560.0 208.0 L561.9 206.8 L564.0 205.7 L566.2 204.6 L568.6 203.6 L571.2 202.6 L573.8 201.7 L576.6 200.8 L579.6 199.9 L582.6 199.1 L585.7 198.3 L588.9 197.6 L592.1 196.8 L595.4 196.2 L598.7 195.5 L602.1 194.9 L605.5 194.2 L608.9 193.7 L612.3 193.1 L615.7 192.5 L619.0 192.0 L622.4 191.5 L625.6 191.0 L628.8 190.5 L632.0 190.0 L635.0 189.5 L638.0 189.0 L640.8 188.5 L643.5 188.1 L646.1 187.6 L648.6 187.1 L650.9 186.6 L653.0 186.1 L654.9 185.6 L656.7 185.1 L658.3 184.6 L659.6 184.1 L660.8 183.5 L661.7 183.0 L662.3 182.4 L662.7 181.8 L662.8 181.1 L662.7 180.5 L662.3 179.8 L661.5 179.1 L660.4 178.3 L659.1 177.5 L657.3 176.7 L655.2 175.8 L652.8 174.9 L650.0 174.0 L646.9 173.2 L643.8 172.4 L640.5 171.6 L637.1 170.8 L633.6 170.1 L630.0 169.4 L626.3 168.7 L622.5 168.0 L618.6 167.4 L614.6 166.7 L610.6 166.1 L606.5 165.6 L602.3 165.0 L598.0 164.4 L593.7 163.9 L589.3 163.4 L584.8 162.9 L580.3 162.4 L575.7 162.0 L571.1 161.6 L566.5 161.1 L561.8 160.7 L557.0 160.3 L552.3 160.0 L547.5 159.6 L542.7 159.3 L537.9 159.0 L533.0 158.7 L528.1 158.4 L523.3 158.1 L518.4 157.8 L513.5 157.6 L508.7 157.3 L503.8 157.1 L498.9 156.9 L494.1 156.7 L489.3 156.5 L484.5 156.3 L479.7 156.2 L475.0 156.0 L470.2 155.9 L465.6 155.7 L460.9 155.6 L456.4 155.5 L451.8 155.4 L447.3 155.3 L442.9 155.2 L438.5 155.1 L434.2 155.1 L430.0 155.0" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="14 12" stroke-linecap="round"/>
+    </svg>
+  </section>
+
+  <section class="needs" aria-labelledby="needs-h">
+    <h2 id="needs-h">מה מעסיק אותך עכשיו?</h2>
+    <p class="sub">8 הצרכים של צעירים שמתמודדים עם סרטן ומחלימים</p>
+    <ul>
+      <li><a href="#"><span class="ic" style="--c:var(--s1)"><i class="ph-duotone ph-plant" aria-hidden="true"></i></span><div><b>פוריות ושימור פוריות</b><span>שאלות לצוות ותכנון סביב הטיפול</span></div></a></li>
+      <li><a href="#"><span class="ic" style="--c:var(--s3)"><i class="ph-duotone ph-heart" aria-hidden="true"></i></span><div><b>זוגיות, אינטימיות ומיניות</b><span>דימוי גוף, שיח זוגי ודייטינג</span></div></a></li>
+      <li><a href="#"><span class="ic" style="--c:var(--s4)"><i class="ph-duotone ph-briefcase" aria-hidden="true"></i></span><div><b>עבודה ולימודים</b><span>חזרה הדרגתית, בקצב שמתאים לגוף</span></div></a></li>
+      <li><a href="#"><span class="ic" style="--c:var(--s6)"><i class="ph-duotone ph-scales" aria-hidden="true"></i></span><div><b>זכויות ובירוקרטיה</b><span>ביטוח לאומי, ועדות ואובדן כושר</span></div></a></li>
+      <li><a href="#"><span class="ic" style="--c:var(--s7)"><i class="ph-duotone ph-baby" aria-hidden="true"></i></span><div><b>הורות לצד המחלה</b><span>איך מדברים עם ילדים</span></div></a></li>
+      <li><a href="#"><span class="ic" style="--c:var(--s9)"><i class="ph-duotone ph-hand-heart" aria-hidden="true"></i></span><div><b>בדידות ושייכות</b><span>מעגל תמיכה ובקשת עזרה</span></div></a></li>
+      <li><a href="#"><span class="ic" style="--c:var(--s10)"><i class="ph-duotone ph-sun-horizon" aria-hidden="true"></i></span><div><b>היום שאחרי</b><span>שגרה חדשה ועתיד</span></div></a></li>
+      <li><a href="#"><span class="ic" style="--c:var(--s12)"><i class="ph-duotone ph-stethoscope" aria-hidden="true"></i></span><div><b>רפואה מותאמת גיל</b><span>שאלות לצוות וייעוץ גנטי</span></div></a></li>
+    </ul>
+  </section>
+
+  <section class="bm" aria-labelledby="bm-h">
+    <h2 id="bm-h">גוף ונפש</h2>
+    <p class="sub">כלים לזמן הטיפול ולאחריו</p>
+    <div class="row">
+      <a class="main" href="#"><i class="ph-duotone ph-flower-lotus" aria-hidden="true"></i><b>נשימה מרגיעה</b><span>3 דקות, גם לפני בדיקה או טיפול</span></a>
+      <a href="#"><i class="ph-duotone ph-person-simple-walk" aria-hidden="true"></i><b>הליכה קלה</b><span>10 דקות, בקצב של היום</span></a>
+      <a href="#"><i class="ph-duotone ph-brain" aria-hidden="true"></i><b>משחק זיכרון</b><span>5 דקות לקשב ולזיכרון</span></a>
+    </div>
+    <div class="more">
+      <a href="#"><i class="ph ph-bowl-food" aria-hidden="true"></i>תזונה</a>
+      <a href="#"><i class="ph ph-barbell" aria-hidden="true"></i>פיזיותרפיה</a>
+      <a href="#"><i class="ph ph-drop" aria-hidden="true"></i>כמה לשתות היום?</a>
+      <a href="#"><i class="ph ph-flower-lotus" aria-hidden="true"></i>כל המדיטציות</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="stripe" aria-hidden="true">
+    <span style="background:var(--s1)"></span><span style="background:var(--s3)"></span><span style="background:var(--s4)"></span><span style="background:var(--s6)"></span>
+    <span style="background:var(--s7)"></span><span style="background:var(--s9)"></span><span style="background:var(--s10)"></span><span style="background:var(--s12)"></span>
+  </div>
+  <p class="wrap note">כל מה שכתבת נשמר רק בטלפון הזה. המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי.</p>
+</footer>
+
+<nav class="bottom" aria-label="ניווט ראשי">
+  <a href="#" aria-current="page"><i class="ph-fill ph-house" aria-hidden="true"></i>בית</a>
+  <a href="#"><i class="ph ph-path" aria-hidden="true"></i>התהליך</a>
+  <a href="#"><i class="ph ph-notebook" aria-hidden="true"></i>היומן</a>
+  <a href="#"><i class="ph ph-toolbox" aria-hidden="true"></i>כלים</a>
+  <a href="#"><i class="ph ph-chart-line-up" aria-hidden="true"></i>מעקב</a>
+</nav>
+</body>
+</html>
