@@ -78,11 +78,12 @@
     background: var(--color-paper);
   }
   :focus-visible { outline: 3px solid var(--color-ink); outline-offset: 3px; }
-  /* Section headers (accordion): show the keyboard focus ring on the whole rounded card,
-     and none after a tap or click (browsers mark <summary> as focus-visible on click too). */
-  summary:focus-visible { outline: none; }
-  details:has(> summary:focus-visible) { outline: 3px solid var(--color-ink); outline-offset: 3px; }
-  html[data-input='pointer'] details:has(> summary:focus-visible) { outline: none; }
+  /* No tap flash on phones. */
+  * { -webkit-tap-highlight-color: transparent; }
+  /* Section headers (accordion): never a frame. Keyboard users get a soft background
+     instead (browsers also mark <summary> as focus-visible after a click, hence data-input). */
+  summary:focus, summary:focus-visible { outline: none; }
+  html[data-input='keyboard'] summary:focus-visible { background: var(--color-sky); border-radius: var(--radius-card); }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition: none !important; animation: none !important; }
   }

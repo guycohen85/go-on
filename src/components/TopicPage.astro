@@ -85,7 +85,7 @@ const draftLabel = (draft: boolean | string) => (typeof draft === 'string' ? dra
           </>
         );
         return accordion ? (
-          <details id={slug(s.id)} class="group scroll-mt-4 rounded-card border-2 border-line open:border-ink">
+          <details id={slug(s.id)} class="group scroll-mt-4 rounded-card border-2 border-line">
             <summary class="flex min-h-11 cursor-pointer list-none items-center gap-3 p-4 [&::-webkit-details-marker]:hidden">
               {d.icon && <Icon name={d.icon} weight="duotone" class="text-icon-md text-ink" />}
               <span class="flex-1">
