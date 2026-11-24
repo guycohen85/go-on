@@ -1,0 +1,35 @@
+---
+// Inlines a Phosphor icon as SVG at build time (no icon font, no runtime request).
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+
+export type IconWeight = 'regular' | 'duotone' | 'fill' | 'bold';
+
+interface Props {
+  name: string;
+  weight?: IconWeight;
+  class?: string;
+  /** Accessible name. Without it the icon is decorative (aria-hidden). */
+  label?: string;
+}
+
+const { name, weight = 'regular', class: className = '', label } = Astro.props;
+const require = createRequire(import.meta.url);
+const suffix = weight === 'regular' ? '' : `-${weight}`;
+const file = require.resolve(`@phosphor-icons/core/assets/${weight}/${name}${suffix}.svg`);
+const raw = readFileSync(file, 'utf8');
+const inner = raw.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+---
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 256 256"
+  fill="currentColor"
+  class:list={['inline-block shrink-0', className]}
+  width="1em"
+  height="1em"
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  focusable="false"
+  set:html={inner}
+/>

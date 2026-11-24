@@ -1,0 +1,47 @@
+---
+import Icon from './Icon.astro';
+import { url } from '../lib/url';
+
+export type NavKey = 'home' | 'back-to-life' | 'diary' | 'tools' | 'tracking';
+
+interface Props {
+  current?: NavKey;
+}
+
+const { current } = Astro.props;
+
+const items: { key: NavKey; href: string; label: string; icon: string }[] = [
+  { key: 'home', href: '/', label: 'בית', icon: 'house' },
+  { key: 'back-to-life', href: '/back-to-life', label: 'חוזרים לחיים', icon: 'path' },
+  { key: 'diary', href: '/diary', label: 'היומן', icon: 'notebook' },
+  { key: 'tools', href: '/tools', label: 'כלים', icon: 'toolbox' },
+  { key: 'tracking', href: '/tracking', label: 'מעקב', icon: 'chart-line-up' },
+];
+---
+<nav
+  aria-label="ניווט ראשי"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper pt-2 pb-[calc(8px+env(safe-area-inset-bottom,0px))]"
+>
+  <ul class="mx-auto flex max-w-page justify-around">
+    {
+      items.map((item) => {
+        const active = item.key === current;
+        return (
+          <li>
+            <a
+              href={url(item.href)}
+              aria-current={active ? 'page' : undefined}
+              class:list={[
+                'flex min-h-11 min-w-15 flex-col items-center text-tiny no-underline',
+                active ? 'font-bold text-ink' : 'text-ink-2',
+              ]}
+            >
+              <Icon name={item.icon} weight={active ? 'fill' : 'regular'} class="text-icon" />
+              {item.label}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

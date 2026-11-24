@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "@fontsource/fredoka/500.css";
+@import "@fontsource/fredoka/600.css";
+@import "@fontsource/assistant/400.css";
+@import "@fontsource/assistant/600.css";
+@import "@fontsource/assistant/700.css";
+
+/* Design tokens: see DESIGN.md. Use only these. */
+@theme {
+  --color-*: initial;
+  --color-ink: oklch(35.1% 0.165 268.8);
+  --color-ink-2: oklch(46.7% 0.084 273.5);
+  --color-paper: oklch(100% 0 0);
+  --color-sky: oklch(94% 0.026 239.1);
+  --color-line: oklch(91% 0.022 245.9);
+  --color-go: oklch(52.5% 0.127 146.3);
+  --color-go-hover: oklch(46.6% 0.115 146.1);
+  --color-white: oklch(100% 0 0);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-t-green: oklch(95.3% 0.036 140.2);
+  --color-i-green: oklch(52.5% 0.127 146.3);
+  --color-t-pink: oklch(93.9% 0.03 359.5);
+  --color-i-pink: oklch(55.1% 0.181 7.2);
+  --color-t-blue: oklch(94.1% 0.025 261.1);
+  --color-i-blue: oklch(49.1% 0.184 264.9);
+  --color-t-yellow: oklch(96% 0.05 89.8);
+  --color-i-yellow: oklch(57.8% 0.125 69.8);
+  --color-t-orange: oklch(94.1% 0.036 56.5);
+  --color-i-orange: oklch(57.9% 0.161 44.3);
+  --color-t-purple: oklch(93.7% 0.029 303.1);
+  --color-i-purple: oklch(49.1% 0.191 293.4);
+
+  --font-*: initial;
+  --font-display: "Fredoka", "Assistant", system-ui, sans-serif;
+  --font-body: "Assistant", system-ui, sans-serif;
+
+  --text-display: clamp(34px, 7.4vw, 64px);
+  --text-display--line-height: 1.08;
+  --text-h2: 30px;
+  --text-h2--line-height: 1.15;
+  --text-title: 22px;
+  --text-title--line-height: 1.25;
+  --text-card: 20px;
+  --text-card--line-height: 1.2;
+  --text-lead: 19px;
+  --text-lead--line-height: 1.55;
+  --text-body: 17px;
+  --text-body--line-height: 1.55;
+  --text-small: 15px;
+  --text-small--line-height: 1.4;
+  --text-tiny: 13px;
+  --text-tiny--line-height: 1.3;
+  --text-icon: 24px;
+  --text-icon-md: 28px;
+  --text-icon-app: 32px;
+  --text-icon-app-lg: 40px;
+
+  --radius-tile: 14px;
+  --radius-app: 18px;
+  --radius-app-lg: 22px;
+  --radius-card: 18px;
+  --radius-pill: 999px;
+
+  --container-page: 1080px;
+  --breakpoint-xs: 400px;
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    color: var(--color-ink);
+    background: var(--color-paper);
+  }
+  :focus-visible { outline: 3px solid var(--color-ink); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+}
+
+@layer components {
+  .page { max-width: var(--container-page); margin-inline: auto; padding-inline: 20px; }
+  .skip-link {
+    position: absolute; inset-inline-start: 12px; top: -100px; z-index: 50;
+    background: var(--color-ink); color: var(--color-white); padding: 10px 16px; border-radius: var(--radius-tile);
+  }
+  .skip-link:focus { top: 12px; }
+}

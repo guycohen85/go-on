@@ -1,0 +1,11 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+<Base title="העמוד לא נמצא">
+  <section class="page pt-8">
+    <h1 class="font-display text-h2 font-semibold">העמוד לא נמצא</h1>
+    <p class="mt-3 text-ink-2">ייתכן שהקישור השתנה. אפשר לחזור לדף הבית ולהמשיך משם.</p>
+    <p class="mt-5"><a href={url('/')} class="inline-flex min-h-11 items-center rounded-tile bg-go px-6 font-bold text-white no-underline hover:bg-go-hover">לדף הבית</a></p>
+  </section>
+</Base>

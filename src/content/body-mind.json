@@ -1,0 +1,7 @@
+[
+  { "id": "nutrition", "order": 1, "title": "תזונה", "icon": "bowl-food", "color": "green", "source": "content/pages/03-health.md" },
+  { "id": "physio", "order": 2, "title": "פיזיותרפיה", "icon": "barbell", "color": "blue", "source": "content/pages/05-physio.md" },
+  { "id": "activity", "order": 3, "title": "פעילות מתונה", "icon": "person-simple-walk", "color": "orange", "source": "content/pages/05-physio.md" },
+  { "id": "mindfulness", "order": 4, "title": "מיינדפולנס", "icon": "flower-lotus", "color": "purple", "source": "content/pages/11-meditation.md" },
+  { "id": "cognitive", "order": 5, "title": "אימון קוגניטיבי", "icon": "brain", "color": "pink", "source": "content/pages/04-brain.md" }
+]

@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import BottomNav, { type NavKey } from '../components/BottomNav.astro';
+import { url } from '../lib/url';
+
+interface Props {
+  title?: string;
+  description?: string;
+  current?: NavKey;
+}
+
+const {
+  title,
+  description = 'תמיכה, מידע וכלים לצעירים בני 18 עד 44 שמתמודדים עם סרטן',
+  current,
+} = Astro.props;
+const fullTitle = title ? `${title} | GO ON` : 'GO ON: תמיכה, מידע וכלים לצעירים שמתמודדים עם סרטן';
+---
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <meta name="theme-color" content="#ffffff" />
+  </head>
+  <body class="pb-24">
+    <a href="#main" class="skip-link">דילוג לתוכן</a>
+    <SiteHeader />
+    <slot name="intro" />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="page mt-10 border-t border-line py-6 text-small text-ink-2">
+      <p>המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי. כל מה שכתבת נשמר רק בטלפון הזה.</p>
+      <ul class="mt-2 flex flex-wrap gap-x-5 font-semibold">
+        <li><a class="inline-flex min-h-11 items-center" href={url('/references')}>מקורות</a></li>
+        <li><a class="inline-flex min-h-11 items-center" href={url('/privacy')}>פרטיות</a></li>
+        <li><a class="inline-flex min-h-11 items-center" href={url('/accessibility')}>הצהרת נגישות</a></li>
+        <li><a class="inline-flex min-h-11 items-center" href={url('/settings')}>גיבוי והגדרות</a></li>
+      </ul>
+    </footer>
+    <BottomNav current={current} />
+  </body>
+</html>

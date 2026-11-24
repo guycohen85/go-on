@@ -1,0 +1,10 @@
+[
+  { "id": "fertility", "order": 1, "title": "פוריות ושימור פוריות", "summary": "שאלות לצוות ותכנון סביב הטיפול", "icon": "plant", "color": "green", "source": "content/pages/09-sexuality.md" },
+  { "id": "relationships", "order": 2, "title": "זוגיות, אינטימיות ומיניות", "summary": "דימוי גוף, שיח זוגי ודייטינג", "icon": "heart", "color": "pink", "source": "content/pages/10-relationships.md" },
+  { "id": "work", "order": 3, "title": "עבודה ולימודים", "summary": "חזרה הדרגתית, בקצב שמתאים לגוף", "icon": "briefcase", "color": "blue", "source": "content/pages/07-return.md" },
+  { "id": "rights", "order": 4, "title": "זכויות ובירוקרטיה", "summary": "ביטוח לאומי, ועדות ואובדן כושר", "icon": "scales", "color": "yellow", "source": "content/pages/08-rights.md" },
+  { "id": "parenting", "order": 5, "title": "הורות לצד המחלה", "summary": "איך מדברים עם ילדים", "icon": "baby", "color": "orange", "source": "content/pages/18-parenting.md" },
+  { "id": "community", "order": 6, "title": "בדידות ושייכות", "summary": "מעגל תמיכה ובקשת עזרה", "icon": "hand-heart", "color": "purple", "source": "content/pages/16-community.md" },
+  { "id": "after", "order": 7, "title": "היום שאחרי", "summary": "שגרה חדשה ועתיד", "icon": "sun-horizon", "color": "yellow", "source": "content/pages/07-return.md" },
+  { "id": "aya", "order": 8, "title": "רפואה מותאמת גיל", "summary": "שאלות לצוות וייעוץ גנטי", "icon": "stethoscope", "color": "blue", "source": "content/pages/17-aya.md" }
+]
