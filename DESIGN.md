@@ -31,6 +31,10 @@ Contrast (checked, WCAG AA): ink on paper 11.8:1, ink on sky 10:1, ink-2 on pape
 - Scale: h1 `clamp(34px, 7.4vw, 64px)` / h2 30px / card title 20–22px / body 17px / lead 19px / small 15px / nav label 13px.
 - Line height: headings 1.08–1.25, body 1.55. Line length under 75 characters.
 
+## Content text (Markdown)
+- `.prose-go`: line length up to 68ch (`max-w-prose`); spacing between blocks 0.75em; h2 in the card title style, h3 bold body size; lists with `ink-2` markers; links bold and underlined.
+- Draft marker `.draft`: a yellow pill (`t-yellow`) above the text, until the client approves it.
+
 ## Spacing and shape
 - Touch targets at least 44px high, including the logo and footer links.
 - Page gutter 20px, max width 1080px. Section spacing 40px.

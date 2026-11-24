@@ -1,0 +1,129 @@
+---
+// A topic page built from its sections in src/content/topics/<topic>/.
+// Intro sections are shown first; the rest open on tap (accordion) when there are 3 or more.
+import { getCollection, render } from 'astro:content';
+import Icon from './Icon.astro';
+import Tile, { type TileColor } from './Tile.astro';
+import Resources from './Resources.astro';
+import Worksheet from './islands/Worksheet';
+import Checklist from './islands/Checklist';
+import Feedback from './islands/Feedback';
+import { url } from '../lib/url';
+
+interface Props {
+  topic: string;
+  title: string;
+  summary?: string;
+  icon?: string;
+  color?: TileColor;
+  feedback?: boolean;
+}
+
+const { topic, title, summary, icon, color = 'blue', feedback = true } = Astro.props;
+
+const all = (await getCollection('sections', (s) => s.id.startsWith(`${topic}/`))).sort((a, b) =>
+  a.id.localeCompare(b.id),
+);
+const intro = all.filter((s) => s.data.intro);
+const sections = all.filter((s) => !s.data.intro);
+const accordion = sections.length >= 3;
+
+const rendered = await Promise.all(all.map(async (s) => ({ entry: s, Content: (await render(s)).Content })));
+const byId = new Map(rendered.map((r) => [r.entry.id, r.Content]));
+const slug = (id: string) => id.split('/')[1]!.replace(/^\d+-/, '');
+const draftLabel = (draft: boolean | string) => (typeof draft === 'string' ? draft : '[טיוטה מהאפיון – לבדיקה]');
+---
+<article class="page pt-6">
+  <header class="flex items-center gap-3.5">
+    {icon && <Tile icon={icon} color={color} />}
+    <div>
+      <h1 class="font-display text-h2 font-semibold">{title}</h1>
+      {summary && <p class="text-ink-2">{summary}</p>}
+    </div>
+  </header>
+
+  {
+    intro.map((s) => {
+      const Content = byId.get(s.id)!;
+      return (
+        <div class="prose-go mt-5 max-w-prose">
+          {s.data.draft && <p class="draft">{draftLabel(s.data.draft)}</p>}
+          <Content />
+        </div>
+      );
+    })
+  }
+
+  <div class:list={['mt-6', accordion ? 'grid gap-3' : 'grid gap-8']}>
+    {
+      sections.map((s) => {
+        const Content = byId.get(s.id)!;
+        const d = s.data;
+        const body = (
+          <>
+            {d.draft && <p class="draft">{draftLabel(d.draft)}</p>}
+            <div class="prose-go max-w-prose">
+              <Content />
+            </div>
+            {d.checklist && <Checklist client:visible id={d.checklist.id} items={d.checklist.items} />}
+            {d.worksheet && (
+              <Worksheet client:visible id={d.worksheet.id} title={d.worksheet.title} fields={d.worksheet.fields} />
+            )}
+            {d.resources && <Resources items={d.resources} flat={accordion} />}
+            {d.links && (
+              <ul class="mt-3 flex flex-wrap gap-x-5">
+                {d.links.map((l) => (
+                  <li>
+                    <a href={url(l.href)} class="inline-flex min-h-11 items-center gap-1.5 font-semibold">
+                      {l.label}
+                      <Icon name="caret-left" weight="bold" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        );
+        return accordion ? (
+          <details id={slug(s.id)} class="group scroll-mt-4 rounded-card border-2 border-line">
+            <summary class="flex min-h-11 cursor-pointer list-none items-center gap-3 p-4 [&::-webkit-details-marker]:hidden">
+              {d.icon && <Icon name={d.icon} weight="duotone" class="text-icon-md text-ink" />}
+              <span class="flex-1">
+                <span class="block font-display text-card font-medium">{d.title}</span>
+                {d.summary && <span class="block text-small text-ink-2">{d.summary}</span>}
+              </span>
+              <Icon name="caret-down" weight="bold" class="text-icon transition-transform group-open:rotate-180" />
+            </summary>
+            <div class="px-4 pb-5">{body}</div>
+          </details>
+        ) : (
+          <section id={slug(s.id)} class="scroll-mt-4">
+            {d.title && (
+              <h2 class="flex items-center gap-2.5 font-display text-card font-medium">
+                {d.icon && <Icon name={d.icon} weight="duotone" class="text-icon-md" />}
+                {d.title}
+              </h2>
+            )}
+            {body}
+          </section>
+        );
+      })
+    }
+  </div>
+
+  {feedback && <Feedback client:visible page={topic} />}
+</article>
+
+<script>
+  // Open the section a link points to (e.g. /needs/relationships#conversation).
+  function openFromHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const target = id ? document.getElementById(id) : null;
+    if (target instanceof HTMLDetailsElement) {
+      target.open = true;
+      target.scrollIntoView({ block: 'start' });
+    }
+  }
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
+</script>

@@ -1,0 +1,66 @@
+---
+// Cards for organisations and services: phone numbers are shown as text (with a call link),
+// e-mail addresses as text, and external links open in a new tab.
+import Icon from './Icon.astro';
+
+interface Resource {
+  name: string;
+  description?: string;
+  phones: { number: string; label?: string }[];
+  emails: string[];
+  links: { label: string; url: string }[];
+  missing?: string;
+}
+
+interface Props {
+  items: Resource[];
+  /** Inside a framed section: separate items with lines instead of cards. */
+  flat?: boolean;
+}
+
+const { items, flat = false } = Astro.props;
+const tel = (n: string) => `tel:${n.replace(/[^\d*+#]/g, '')}`;
+---
+<ul class:list={['mt-4', flat ? 'border-t border-line' : 'grid gap-3 md:grid-cols-2']}>
+  {
+    items.map((r) => (
+      <li class:list={[flat ? 'border-b border-line py-4' : 'rounded-card border-2 border-line p-4']}>
+        <h3 class="font-display text-card font-medium">{r.name}</h3>
+        {r.description && <p class="mt-1 text-ink-2">{r.description}</p>}
+        <ul class="mt-2 flex flex-wrap gap-x-5">
+          {r.phones.map((p) => (
+            <li>
+              <a href={tel(p.number)} class="inline-flex min-h-11 items-center gap-1.5 font-semibold">
+                <Icon name="phone" weight="bold" />
+                {p.label && <span>{p.label}:</span>}
+                <bdi dir="ltr">{p.number}</bdi>
+              </a>
+            </li>
+          ))}
+          {r.emails.map((e) => (
+            <li>
+              <a href={`mailto:${e}`} class="inline-flex min-h-11 items-center gap-1.5 font-semibold">
+                <Icon name="envelope-simple" weight="bold" />
+                <bdi dir="ltr">{e}</bdi>
+              </a>
+            </li>
+          ))}
+          {r.links.map((l) => (
+            <li>
+              <a
+                href={l.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex min-h-11 items-center gap-1.5 font-semibold"
+              >
+                {l.label}
+                <Icon name="arrow-square-out" weight="bold" label="(נפתח בחלון חדש)" />
+              </a>
+            </li>
+          ))}
+        </ul>
+        {r.missing && <p class="mt-1 text-small text-ink-2">[חסר: {r.missing}]</p>}
+      </li>
+    ))
+  }
+</ul>

@@ -26,6 +26,12 @@ const fullTitle = title ? `${title} | GO ON` : 'GO ON: תמיכה, מידע וכ
     <meta name="description" content={description} />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <meta name="theme-color" content="#ffffff" />
+    <script is:inline>
+      // Remember whether the last interaction was a tap/click or the keyboard,
+      // so focus rings appear only for keyboard users where browsers over-report focus-visible.
+      addEventListener('pointerdown', () => (document.documentElement.dataset.input = 'pointer'), true);
+      addEventListener('keydown', () => (document.documentElement.dataset.input = 'keyboard'), true);
+    </script>
   </head>
   <body class="pb-24">
     <a href="#main" class="skip-link">דילוג לתוכן</a>

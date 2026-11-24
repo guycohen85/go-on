@@ -14,11 +14,14 @@
     "check:links": "node scripts/check-links.mjs"
   },
   "dependencies": {
+    "@astrojs/preact": "6.1.2",
     "@fontsource/assistant": "5.3.0",
     "@fontsource/fredoka": "5.3.0",
     "@phosphor-icons/core": "2.1.1",
     "@tailwindcss/vite": "4.3.5",
     "astro": "7.4.8",
+    "idb-keyval": "6.3.0",
+    "preact": "11.2.0",
     "tailwindcss": "4.3.5"
   },
   "devDependencies": {
