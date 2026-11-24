@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO ON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+  :root {
+    --ink: #1b2a8f;
+    --ink-2: #4b5689;
+    --paper: #ffffff;
+    --sand: #f8f4ef;
+    --line: #e2ded8;
+    --sun: #ffc61a;
+    --orange: #ff7a1a;
+    --pink: #ffb3cf;
+    --mint: #8fe0b0;
+    --sky: #9fd3fb;
+    --blue: #1f5be0;
+    --blue-hover: #174ac0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: Assistant, system-ui, sans-serif; font-size: 17px; line-height: 1.55;
+    padding-block-end: 90px;
+  }
+  h1, h2, h3, .brand { font-family: Fredoka, Assistant, sans-serif; font-weight: 500; line-height: 1.12; margin: 0; }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin-inline: auto; padding-inline: 18px; }
+
+  .top { display: flex; justify-content: space-between; align-items: center; padding-block: 14px; }
+  .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 24px; font-weight: 600; }
+  .brand img { width: 40px; height: 40px; }
+  .help { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; text-decoration: none; border: 2px solid var(--line); border-radius: 999px; padding: 7px 16px; }
+  .help:hover { border-color: var(--ink); }
+
+  /* hero: a flat sun-yellow block, the sun's 12 rays are the 12 stations */
+  .hero {
+    background: var(--sun); border-radius: 28px; padding: 26px 22px 28px;
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: center; position: relative; overflow: hidden;
+  }
+  @media (min-width: 860px) { .hero { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); padding: 48px 56px; } }
+  .hero .where { font-weight: 700; margin: 0 0 6px; }
+  .hero h1 { font-size: clamp(40px, 9vw, 72px); letter-spacing: -.5px; }
+  .hero .goal { font-size: 19px; margin: 12px 0 22px; max-width: 30ch; }
+  .sunring { width: min(300px, 78vw); height: auto; justify-self: center; display: block; }
+  @media (max-width: 859px) { .sunring { order: -1; width: min(230px, 62vw); } }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 10px; border: 0; cursor: pointer;
+    background: var(--blue); color: #fff; text-decoration: none; font: 700 19px Assistant, sans-serif;
+    border-radius: 999px; padding: 14px 28px; transition: background .15s;
+  }
+  .pill:hover { background: var(--blue-hover); }
+
+  .code { margin-block-start: 22px; }
+  .code label { display: block; font-weight: 700; margin-block-end: 8px; }
+  .code .row { display: flex; gap: 8px; max-width: 360px; }
+  .code input {
+    flex: 1; min-width: 0; font: 700 20px ui-monospace, monospace; letter-spacing: 8px; text-align: center; color: var(--ink);
+    background: rgba(255,255,255,.75); border: 2px solid transparent; border-radius: 999px; padding: 10px;
+  }
+  .code input:focus { outline: none; border-color: var(--ink); background: #fff; }
+  .code button { font: inherit; font-weight: 700; background: var(--ink); color: #fff; border: 0; border-radius: 999px; padding-inline: 20px; cursor: pointer; }
+  .pid { font-size: 14px; margin: 10px 0 0; }
+
+  /* intent grid */
+  .intent { padding-block: 56px 10px; text-align: center; }
+  .intent h2, .minute h2 { font-size: clamp(28px, 5vw, 40px); }
+  .intent .sub, .minute .sub { color: var(--ink-2); margin: 8px 0 24px; }
+  .grid { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; text-align: start; }
+  @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+  .grid a {
+    display: flex; align-items: center; gap: 14px; text-decoration: none;
+    border: 2px solid var(--line); border-radius: 16px; padding: 16px 18px; transition: border-color .15s;
+  }
+  .grid a:hover { border-color: var(--ink); }
+  .grid .t { flex: 1; font-size: 18px; font-weight: 600; }
+  .grid .ic { font-size: 30px; }
+  .grid .chev { font-size: 18px; color: var(--ink-2); }
+
+  /* a minute for you: pill tabs + big colored panels */
+  .minute { padding-block: 56px 10px; text-align: center; }
+  .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-block-end: 22px; }
+  .tabs button { font: 600 16px Assistant, sans-serif; color: var(--ink); background: var(--sand); border: 0; border-radius: 999px; padding: 9px 18px; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--ink); color: #fff; }
+  .panels { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding-block-end: 10px; text-align: start; }
+  .panel {
+    flex: 0 0 min(84%, 640px); scroll-snap-align: start; border-radius: 26px; padding: 26px;
+    min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; text-decoration: none;
+  }
+  .panel h3 { font-size: 30px; }
+  .panel p { margin: 6px 0 0; max-width: 32ch; }
+  .panel .play { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; background: #fff; border-radius: 999px; padding: 10px 18px 10px 14px; align-self: flex-start; }
+  .panel .play i { font-size: 22px; }
+  .p-orange { background: #ffd2b0; } .p-pink { background: var(--pink); } .p-mint { background: var(--mint); } .p-sky { background: var(--sky); }
+
+  .note { font-size: 14px; color: var(--ink-2); background: var(--sand); border-radius: 16px; padding: 14px 18px; margin-block: 40px 10px; display: flex; gap: 10px; align-items: center; }
+  .note i { font-size: 22px; flex: none; }
+
+  nav.bottom {
+    position: fixed; inset-inline: 0; bottom: 0; background: var(--paper); border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around; padding-block: 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+  nav.bottom a { display: flex; flex-direction: column; align-items: center; font-size: 13px; text-decoration: none; color: var(--ink-2); min-width: 56px; }
+  nav.bottom i { font-size: 24px; }
+  nav.bottom a[aria-current] { color: var(--ink); font-weight: 700; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <a class="brand" href="#"><img src="../../assets/logo/go-on-mark.svg" alt="">GO ON</a>
+  <a class="help" href="#"><i class="ph-bold ph-lifebuoy" aria-hidden="true"></i>צריך עזרה עכשיו?</a>
+</header>
+
+<main class="wrap">
+  <section class="hero" aria-labelledby="h1">
+    <div>
+      <h1 id="h1">יעד קטן בדרך</h1>
+      <p class="goal">לבחור צעד אחד שאפשר לעשות השבוע, בקצב שלך.</p>
+      <a class="pill" href="#">להמשיך בתחנה 3 <i class="ph-bold ph-arrow-left" aria-hidden="true"></i></a>
+      <form class="code" onsubmit="return false">
+        <label for="code">קיבלת קוד מהמלווה לתחנה 4?</label>
+        <div class="row"><input id="code" inputmode="numeric" maxlength="4" placeholder="····" autocomplete="off"><button type="submit">פתיחה</button></div>
+        <p class="pid">מספר המשתתף שלך: <b>K7M‑4QP</b>. המלווה צריך אותו כדי לתת קוד.</p>
+      </form>
+    </div>
+    <svg class="sunring" viewBox="0 0 300 300" role="img" aria-label="12 קרני השמש הן 12 התחנות: 2 הושלמו, את/ה בתחנה 3">
+      <g id="rays"></g>
+      <circle cx="150" cy="150" r="78" fill="var(--orange)"/>
+      <text x="150" y="160" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="600" font-size="64" fill="#1b2a8f">3</text>
+      <text x="150" y="190" text-anchor="middle" font-family="Assistant, sans-serif" font-weight="700" font-size="18" fill="#1b2a8f">מתוך 12</text>
+    </svg>
+  </section>
+
+  <section class="intent" aria-labelledby="needs-h">
+    <h2 id="needs-h">מה מעסיק אותך עכשיו?</h2>
+    <p class="sub">8 הצרכים של צעירים שמתמודדים עם סרטן ומחלימים</p>
+    <ul class="grid">
+      <li><a href="#"><i class="ph-fill ph-plant ic" style="color:#2e9e57" aria-hidden="true"></i><span class="t">פוריות ושימור פוריות</span><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+      <li><a href="#"><i class="ph-fill ph-heart ic" style="color:#e5484d" aria-hidden="true"></i><span class="t">זוגיות, אינטימיות ומיניות</span><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+      <li><a href="#"><i class="ph-fill ph-briefcase ic" style="color:#1f5be0" aria-hidden="true"></i><span class="t">עבודה ולימודים</span><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+      <li><a href="#"><i class="ph-fill ph-scales ic" style="color:#f08a00" aria-hidden="true"></i><span class="t">זכויות ובירוקרטיה</span><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+      <li><a href="#"><i class="ph-fill ph-baby ic" style="color:#d9508a" aria-hidden="true"></i><span class="t">הורות לצד המחלה</span><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+      <li><a href="#"><i class="ph-fill ph-hand-heart ic" style="color:#2e9e57" aria-hidden="true"></i><span class="t">בדידות ושייכות</span><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+      <li><a href="#"><i class="ph-fill ph-sun-horizon ic" style="color:#f0a800" aria-hidden="true"></i><span class="t">היום שאחרי</span><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+      <li><a href="#"><i class="ph-fill ph-stethoscope ic" style="color:#1f5be0" aria-hidden="true"></i><span class="t">רפואה מותאמת גיל</span><i class="ph ph-caret-left chev" aria-hidden="true"></i></a></li>
+    </ul>
+  </section>
+
+  <section class="minute" aria-labelledby="min-h">
+    <h2 id="min-h">דקה בשבילך</h2>
+    <p class="sub">תרגול קצר לגוף ולראש, לימים עמוסים</p>
+    <div class="tabs" role="tablist" aria-label="סוג תרגול">
+      <button role="tab" aria-selected="true">הכל</button>
+      <button role="tab" aria-selected="false">נשימה ורוגע</button>
+      <button role="tab" aria-selected="false">תנועה</button>
+      <button role="tab" aria-selected="false">ראש וזיכרון</button>
+      <button role="tab" aria-selected="false">תזונה</button>
+    </div>
+    <div class="panels">
+      <a class="panel p-orange" href="#"><div><h3>נשימה מרגיעה</h3><p>שאיפה ארוכה, נשיפה ארוכה יותר. מתאים גם לפני בדיקה או טיפול.</p></div><span class="play"><i class="ph-fill ph-play-circle" aria-hidden="true"></i>3 דקות</span></a>
+      <a class="panel p-mint" href="#"><div><h3>הליכה קלה</h3><p>בחוץ או בבית, בקצב שהגוף מרשה היום.</p></div><span class="play"><i class="ph-fill ph-play-circle" aria-hidden="true"></i>10 דקות</span></a>
+      <a class="panel p-pink" href="#"><div><h3>משחק זיכרון</h3><p>אימון קצר לקשב ולזיכרון, ל"ערפל" שאחרי טיפולים.</p></div><span class="play"><i class="ph-fill ph-play-circle" aria-hidden="true"></i>5 דקות</span></a>
+      <a class="panel p-sky" href="#"><div><h3>כמה לשתות היום?</h3><p>מחשבון קצר לפי ההמלצה הכללית.</p></div><span class="play"><i class="ph-fill ph-drop" aria-hidden="true"></i>חצי דקה</span></a>
+    </div>
+  </section>
+
+  <p class="note"><i class="ph ph-device-mobile" aria-hidden="true"></i>כל מה שכתבת נשמר רק בטלפון הזה. המידע באפליקציה כללי ואינו מחליף ייעוץ רפואי אישי.</p>
+</main>
+
+<nav class="bottom" aria-label="ניווט ראשי">
+  <a href="#" aria-current="page"><i class="ph-fill ph-house" aria-hidden="true"></i>בית</a>
+  <a href="#"><i class="ph ph-path" aria-hidden="true"></i>התהליך</a>
+  <a href="#"><i class="ph ph-notebook" aria-hidden="true"></i>היומן</a>
+  <a href="#"><i class="ph ph-toolbox" aria-hidden="true"></i>כלים</a>
+  <a href="#"><i class="ph ph-chart-line-up" aria-hidden="true"></i>מעקב</a>
+</nav>
+
+<script>
+  // 12 rays around the sun = 12 stations, starting at the top and going clockwise.
+  (function () {
+    const ns = 'http://www.w3.org/2000/svg';
+    const g = document.getElementById('rays');
+    const current = 3;
+    for (let i = 1; i <= 12; i++) {
+      const angle = (i - 1) * 30;
+      const r = document.createElementNS(ns, 'rect');
+      const long = i === current;
+      const w = 22, h = long ? 50 : 36, inner = 92;
+      r.setAttribute('x', 150 - w / 2);
+      r.setAttribute('y', 150 - inner - h);
+      r.setAttribute('width', w); r.setAttribute('height', h); r.setAttribute('rx', w / 2);
+      r.setAttribute('transform', 'rotate(' + angle + ' 150 150)');
+      r.setAttribute('fill', i < current ? '#ff7a1a' : long ? '#1b2a8f' : 'rgba(255,255,255,.7)');
+      g.appendChild(r);
+    }
+  })();
+</script>
+</body>
+</html>
