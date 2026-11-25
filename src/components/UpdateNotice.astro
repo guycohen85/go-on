@@ -1,0 +1,35 @@
+---
+// Registers the service worker (offline support) and, when a new version is ready, offers to
+// update. The page never reloads by itself, so nothing the user is typing is lost.
+// Rendered inside the fixed bottom stack in Base.astro, right above the bottom nav.
+---
+<!-- Always in the page, so screen readers announce the text when it is filled in. -->
+<p id="update-live" class="sr-only" role="status"></p>
+<div id="update-notice" hidden class="px-5 pb-2">
+  <div class="mx-auto flex max-w-page flex-wrap items-center justify-between gap-3 rounded-card border-2 border-ink bg-paper p-3">
+    <p class="font-semibold">יש גרסה חדשה של האפליקציה.</p>
+    <div class="flex gap-2">
+      <button type="button" data-update class="inline-flex min-h-11 items-center rounded-tile bg-go px-4 font-bold text-white transition-colors hover:bg-go-hover">
+        עדכון
+      </button>
+      <button type="button" data-later class="inline-flex min-h-11 items-center rounded-tile border-2 border-line bg-paper px-4 font-semibold text-ink transition-colors hover:border-ink">
+        אחר כך
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { registerSW } from 'virtual:pwa-register';
+
+  const notice = document.getElementById('update-notice')!;
+  const live = document.getElementById('update-live')!;
+  const update = registerSW({
+    onNeedRefresh() {
+      notice.hidden = false;
+      live.textContent = 'יש גרסה חדשה של האפליקציה. כפתור העדכון נמצא בתחתית המסך.';
+    },
+  });
+  notice.querySelector('[data-update]')!.addEventListener('click', () => void update());
+  notice.querySelector('[data-later]')!.addEventListener('click', () => (notice.hidden = true));
+</script>

@@ -1,0 +1,11 @@
+# Cloudflare static-asset headers (GitHub Pages ignores this file).
+# The only outside address the app talks to is Web3Forms (anonymous feedback).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.web3forms.com; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+# The service worker must never be cached, or updates would not arrive.
+/sw.js
+  Cache-Control: no-cache

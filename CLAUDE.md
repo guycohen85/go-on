@@ -12,7 +12,7 @@ A Hebrew (RTL) web app (PWA) for young adults aged 18 to 44 coping with cancer: 
 - Astro 7 (static output), Tailwind CSS 4 (`@theme` tokens in `src/styles/global.css`), TypeScript (strict)
 - Preact islands (`client:visible` / `client:load`) only where interaction is needed
 - Content collections in `src/content/`, Markdown
-- `@vite-pwa/astro` 2.x for offline support
+- `@vite-pwa/astro` 2.0.2 (`AstroPWAIntegration`) for offline support; pages build as files (`tools.html`); links to folder indexes (the `/back-to-life/` hub) end with a slash
 - Storage: IndexedDB via `idb-keyval`; diary encrypted with Web Crypto (AES-GCM, PBKDF2)
 - Fonts via Fontsource (Fredoka, Assistant); icons from `@phosphor-icons/core` inlined as SVG
 - Feedback: Web3Forms (`PUBLIC_WEB3FORMS_KEY`)
@@ -38,6 +38,9 @@ npm run dev       # local dev server
 npm run build     # static build to dist/
 npm run preview   # serve the build
 npm run check     # astro check (types)
+npm run check:links  # internal link check on dist/
+node scripts/make-icons.mjs  # regenerate icons from the logo
+SITE_URL=<final URL> npm run build && npx wrangler deploy  # deploy (client's Cloudflare account)
 ```
 
 ## Workflow

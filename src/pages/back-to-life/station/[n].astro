@@ -32,7 +32,7 @@ const fields = s.worksheet.map((f) => ({ ...f, type: 'textarea' as const }));
 <Base title={`תחנה ${s.n}: ${s.title}`} description={s.goal} current="back-to-life">
   <article class="page pt-6">
     <a
-      href={url('/back-to-life')}
+      href={url('/back-to-life/')}
       class="-mt-2 mb-3 inline-flex min-h-11 items-center gap-1.5 text-small font-semibold text-ink-2 no-underline hover:text-ink"
     >
       <Icon name="arrow-right" weight="bold" />

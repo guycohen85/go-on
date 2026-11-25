@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import BottomNav, { type NavKey } from '../components/BottomNav.astro';
+import UpdateNotice from '../components/UpdateNotice.astro';
 import { url } from '../lib/url';
 
 interface Props {
@@ -15,6 +16,8 @@ const {
   description = 'תמיכה, מידע וכלים לצעירים בני 18 עד 44 שמתמודדים עם סרטן',
   current,
 } = Astro.props;
+// Share previews need an absolute image URL, so only when the site URL is known (astro.config `site`).
+const og = Astro.site ? new URL(url('/og-image.png'), Astro.site).href : null;
 const fullTitle = title ? `${title} | GO ON` : 'GO ON: תמיכה, מידע וכלים לצעירים שמתמודדים עם סרטן';
 ---
 <!doctype html>
@@ -24,7 +27,20 @@ const fullTitle = title ? `${title} | GO ON` : 'GO ON: תמיכה, מידע וכ
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={url('/favicon-32.png')} sizes="32x32" type="image/png" />
+    <link rel="icon" href={url('/favicon-48.png')} sizes="48x48" type="image/png" />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon-180x180.png')} />
+    <link rel="manifest" href={url('/manifest.webmanifest')} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="he_IL" />
+    <meta property="og:site_name" content="GO ON" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {og && <meta property="og:image" content={og} />}
+    {og && <meta property="og:image:width" content="1200" />}
+    {og && <meta property="og:image:height" content="630" />}
+    {og && <meta property="og:image:alt" content="הלוגו של GO ON" />}
+    {og && <meta name="twitter:card" content="summary_large_image" />}
     <meta name="theme-color" content="#ffffff" />
     {import.meta.env.PUBLIC_PREVIEW && <meta name="robots" content="noindex, nofollow" />}
     <script is:inline>
@@ -50,6 +66,10 @@ const fullTitle = title ? `${title} | GO ON` : 'GO ON: תמיכה, מידע וכ
         <li><a class="inline-flex min-h-11 items-center" href={url('/settings')}>גיבוי והגדרות</a></li>
       </ul>
     </footer>
-    <BottomNav current={current} />
+    <!-- Fixed bottom stack: the update notice (when shown) sits right above the nav, whatever its height. -->
+    <div class="fixed inset-x-0 bottom-0 z-40">
+      <UpdateNotice />
+      <BottomNav current={current} />
+    </div>
   </body>
 </html>

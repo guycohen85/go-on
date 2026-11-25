@@ -18,18 +18,20 @@ interface Props {
   icon?: string;
   color?: TileColor;
   feedback?: boolean;
+  /** Sections open on tap. Default: when there are 3 or more. Policy pages pass false to show everything. */
+  accordion?: boolean;
   /** A link back to the parent page, shown above the title. */
   back?: { href: string; label: string };
 }
 
-const { topic, title, summary, icon, color = 'blue', feedback = true, back } = Astro.props;
+const { topic, title, summary, icon, color = 'blue', feedback = true, back, accordion: collapse } = Astro.props;
 
 const all = (await getCollection('sections', (s) => s.id.startsWith(`${topic}/`))).sort((a, b) =>
   a.id.localeCompare(b.id),
 );
 const intro = all.filter((s) => s.data.intro);
 const sections = all.filter((s) => !s.data.intro);
-const accordion = sections.length >= 3;
+const accordion = collapse ?? sections.length >= 3;
 
 const rendered = await Promise.all(all.map(async (s) => ({ entry: s, Content: (await render(s)).Content })));
 const byId = new Map(rendered.map((r) => [r.entry.id, r.Content]));
