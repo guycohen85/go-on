@@ -12,7 +12,7 @@ const { current } = Astro.props;
 
 const items: { key: NavKey; href: string; label: string; icon: string }[] = [
   { key: 'home', href: '/', label: 'בית', icon: 'house' },
-  { key: 'back-to-life', href: '/back-to-life', label: 'חוזרים לחיים', icon: 'path' },
+  { key: 'back-to-life', href: '/back-to-life/', label: 'חוזרים לחיים', icon: 'path' },
   { key: 'diary', href: '/diary', label: 'היומן', icon: 'notebook' },
   { key: 'tools', href: '/tools', label: 'כלים', icon: 'toolbox' },
   { key: 'tracking', href: '/tracking', label: 'מעקב', icon: 'chart-line-up' },
@@ -20,7 +20,7 @@ const items: { key: NavKey; href: string; label: string; icon: string }[] = [
 ---
 <nav
   aria-label="ניווט ראשי"
-  class="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper pt-2 pb-[calc(8px+env(safe-area-inset-bottom,0px))]"
+  class="border-t border-line bg-paper pt-2 pb-[calc(8px+env(safe-area-inset-bottom,0px))]"
 >
   <ul class="mx-auto flex max-w-page justify-around">
     {

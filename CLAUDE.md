@@ -12,7 +12,7 @@ A Hebrew (RTL) web app (PWA) for young adults aged 18 to 44 coping with cancer: 
 - Astro 7 (static output), Tailwind CSS 4 (`@theme` tokens in `src/styles/global.css`), TypeScript (strict)
 - Preact islands (`client:visible` / `client:load`) only where interaction is needed
 - Content collections in `src/content/`, Markdown
-- `@vite-pwa/astro` 2.0.2 (`AstroPWAIntegration`) for offline support; pages build as files (`tools.html`)
+- `@vite-pwa/astro` 2.0.2 (`AstroPWAIntegration`) for offline support; pages build as files (`tools.html`); links to folder indexes (the `/back-to-life/` hub) end with a slash
 - Storage: IndexedDB via `idb-keyval`; diary encrypted with Web Crypto (AES-GCM, PBKDF2)
 - Fonts via Fontsource (Fredoka, Assistant); icons from `@phosphor-icons/core` inlined as SVG
 - Feedback: Web3Forms (`PUBLIC_WEB3FORMS_KEY`)

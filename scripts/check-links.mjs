@@ -22,10 +22,14 @@ for (const file of files) {
     // Under a base path, a link without it points outside the site.
     const inBase = !base || link.startsWith(`${base}/`);
     const target = join(dist, decodeURIComponent(base ? link.slice(base.length) : link));
+    // Match how the site is served and cached offline: "/x/" is a folder index (x/index.html),
+    // "/x" is a file or a page built as x.html. Anything else breaks offline or on GitHub Pages.
+    const slash = target.endsWith('/') || target === dist;
     const ok =
       inBase &&
-      ((existsSync(target) && (statSync(target).isFile() || existsSync(join(target, 'index.html')))) ||
-        existsSync(`${target.replace(/\/$/, '')}.html`));
+      (slash
+        ? existsSync(join(target, 'index.html'))
+        : (existsSync(target) && statSync(target).isFile()) || existsSync(`${target}.html`));
     if (!ok) {
       broken++;
       console.log(`${file.replace(dist, '')}: ${link}`);

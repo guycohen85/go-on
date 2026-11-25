@@ -77,7 +77,7 @@ export default function StationDone({ station, total }: Props) {
           </a>
         )}
         {doneAt && next === null && (
-          <a href={url('/back-to-life')} class={`${primary} no-underline`}>
+          <a href={url('/back-to-life/')} class={`${primary} no-underline`}>
             לעמוד חוזרים לחיים
           </a>
         )}

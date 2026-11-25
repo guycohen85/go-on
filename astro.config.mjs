@@ -38,9 +38,11 @@ export default defineConfig({
   // Sub-path when served from a folder, e.g. /go-on/ on GitHub Pages (set by the deploy workflow).
   base,
   trailingSlash: 'ignore',
-  // Pages as /tools.html (not /tools/index.html): links have no trailing slash, and the offline
-  // cache then finds /tools as tools.html without precaching every page twice.
-  build: { format: 'file' },
+  // Pages as files (/tools → tools.html), so links without a trailing slash match the offline
+  // cache and nothing is precached twice. 'preserve' keeps index.astro as a folder index: the
+  // "חוזרים לחיים" hub is back-to-life/index.html, because a back-to-life.html next to the
+  // back-to-life/ folder is ambiguous on GitHub Pages. Links to the hub end with a slash.
+  build: { format: 'preserve' },
   integrations: [
     preact(),
     sitemap,
@@ -68,6 +70,7 @@ export default defineConfig({
       },
       generateSW: {
         // Pages, scripts, styles, icons and woff2 fonts (the .woff copies are for old browsers only).
+        // Workbox serves "/tools" from tools.html (cleanURLs) and "/back-to-life/" from its index.html.
         // The plugin adds the manifest and its icons itself.
         globPatterns: ['**/*.{html,js,css,svg,png,woff2}'],
         // The manifest icons are added by the plugin itself; listing them again duplicates them.

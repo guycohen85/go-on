@@ -44,7 +44,8 @@ const iconColor: Record<TileColor, string> = {
   purple: 'text-i-purple',
 };
 
-const here = Astro.url.pathname.replace(/\/$/, '') || '/';
+// Pages build as files, so the path may be /tools.html or /back-to-life/index.html.
+const here = Astro.url.pathname.replace(/(\/index)?\.html$/, '').replace(/\/$/, '') || '/';
 const isHere = (href: string) => (url(href).replace(/\/$/, '') || '/') === here;
 ---
 <dialog

@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 
-// Previews (GitHub Pages) are not indexed. The real site points search engines to the sitemap.
+// The real site points search engines to the sitemap. Crawlers read robots.txt only at the host
+// root, so on the GitHub Pages preview (/go-on/robots.txt) the Disallow has no effect; the preview
+// is kept out of search by the noindex meta tag in Base.astro.
 export const GET: APIRoute = ({ site }) => {
   const preview = !!import.meta.env.PUBLIC_PREVIEW;
   const lines = ['User-agent: *', preview ? 'Disallow: /' : 'Allow: /'];
