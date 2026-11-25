@@ -26,9 +26,18 @@ export async function load<T>(key: string, fallback: T, onLate?: (value: T) => v
   return first ?? fallback;
 }
 
+let asked = false;
+/** After the first successful write, ask the browser not to evict our data under storage pressure. */
+function persist() {
+  if (asked) return;
+  asked = true;
+  void navigator.storage?.persist?.().catch(() => undefined);
+}
+
 export async function save<T>(key: string, value: T): Promise<boolean> {
   try {
     await set(key, value);
+    persist();
     return true;
   } catch {
     return false;
@@ -42,6 +51,7 @@ export async function save<T>(key: string, value: T): Promise<boolean> {
 export async function merge<T extends Record<string, unknown>>(key: string, patch: Partial<T>): Promise<boolean> {
   try {
     await update<T>(key, (old) => ({ ...(old ?? ({} as T)), ...patch }));
+    persist();
     return true;
   } catch {
     return false;
@@ -52,6 +62,7 @@ export async function merge<T extends Record<string, unknown>>(key: string, patc
 export async function updateList<T>(key: string, change: (list: T[]) => T[]): Promise<boolean> {
   try {
     await update<T[]>(key, (old) => change(old ?? []));
+    persist();
     return true;
   } catch {
     return false;

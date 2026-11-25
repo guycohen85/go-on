@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { update } from 'idb-keyval';
+import { get, update } from 'idb-keyval';
 import { load } from '../../lib/store';
 import { url } from '../../lib/url';
 import { note } from './ui';
@@ -17,8 +17,11 @@ interface Props {
   scale: string;
   /** Draft label for the scale text, until the client approves it. */
   scaleDraft?: string;
-  /** "start": the baseline page. "again": re-rate next to the first rating (station 11). */
-  mode?: 'start' | 'again';
+  /**
+   * "start": the baseline page. "again": re-rate next to the first rating (station 11).
+   * "auto" (tracking page): "start" until a first rating exists, then "again". Decided once, on load.
+   */
+  mode?: 'start' | 'again' | 'auto';
 }
 
 const KEY = 'baseline';
@@ -28,7 +31,7 @@ export default function Baseline({ domains, scale, scaleDraft, mode = 'start' }:
   const [stored, setStored] = useState<Stored>({});
   const [ready, setReady] = useState(false);
   const [status, setStatus] = useState<'idle' | 'saved' | 'error'>('idle');
-  const round = mode === 'start' ? 'start' : 'again';
+  const [round, setRound] = useState<'start' | 'again'>(mode === 'start' ? 'start' : 'again');
 
   useEffect(() => {
     // Ratings made before storage answered win over the late stored ones.
@@ -37,11 +40,23 @@ export default function Baseline({ domains, scale, scaleDraft, mode = 'start' }:
         start: { ...s.start, ...cur.start },
         again: { ...s.again, ...cur.again },
       }));
+    if (mode === 'auto') {
+      // The round depends on what is stored, so wait for the real value: a timed-out read that
+      // looks empty would choose "start" and overwrite the first ratings.
+      (get(KEY) as Promise<Stored | undefined>)
+        .catch(() => undefined)
+        .then((s = {}) => {
+          mergeIn(s);
+          setRound(Object.keys(s.start ?? {}).length > 0 ? 'again' : 'start');
+          setReady(true);
+        });
+      return;
+    }
     load<Stored>(KEY, {}, mergeIn).then((s) => {
       mergeIn(s);
       setReady(true);
     });
-  }, []);
+  }, [mode]);
 
   async function rate(domain: string, value: number) {
     setStored((cur) => ({ ...cur, [round]: { ...cur[round], [domain]: value } }));
@@ -56,6 +71,7 @@ export default function Baseline({ domains, scale, scaleDraft, mode = 'start' }:
   const start = stored.start ?? {};
   const current = stored[round] ?? {};
   const hasStart = Object.keys(start).length > 0;
+  const again = round === 'again';
 
   return (
     <form class="mt-4 rounded-card bg-sky p-4" onSubmit={(e) => e.preventDefault()} aria-busy={!ready}>
@@ -74,7 +90,7 @@ export default function Baseline({ domains, scale, scaleDraft, mode = 'start' }:
           const id = `baseline-${round}-${i}`;
           const value = current[domain];
           const before = start[domain];
-          const diff = mode === 'again' && value !== undefined && before !== undefined ? value - before : null;
+          const diff = again && value !== undefined && before !== undefined ? value - before : null;
           return (
             <div key={domain}>
               <label for={id} class="block font-semibold">
@@ -97,7 +113,7 @@ export default function Baseline({ domains, scale, scaleDraft, mode = 'start' }:
                   {value ?? '–'}
                 </output>
               </div>
-              {mode === 'again' && before !== undefined && (
+              {again && before !== undefined && (
                 <p class="text-small text-ink-2">
                   בפתיחה: {before}
                   {diff !== null && diff > 0 && ` · עלה ב‑${diff}`}

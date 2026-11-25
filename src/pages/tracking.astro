@@ -1,7 +1,10 @@
 ---
+import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import Placeholder from '../components/Placeholder.astro';
+import TopicPage from '../components/TopicPage.astro';
+
+const item = (await getEntry('myTools', 'tracking'))!.data;
 ---
-<Base title="מעקב" current="tracking">
-  <Placeholder title="מעקב" milestone={4} />
+<Base title={item.title} current="tracking">
+  <TopicPage topic="tracking" title={item.title} summary={item.summary} icon={item.icon} color={item.color} />
 </Base>

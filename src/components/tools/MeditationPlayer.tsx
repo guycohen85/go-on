@@ -87,8 +87,8 @@ export default function MeditationPlayer({ practices, noVoiceText }: Props) {
     <div class="mt-4 grid gap-5">
       {folders.map(([folder, summary]) => (
         <section key={folder}>
-          <h4 class="font-display text-card font-medium">{folder}</h4>
-          <p class="text-small text-ink-2">{summary}</p>
+          {folder && <h4 class="font-display text-card font-medium">{folder}</h4>}
+          {summary && <p class="text-small text-ink-2">{summary}</p>}
           <ul class="mt-2 border-t border-line">
             {practices.filter((p) => p.folder === folder).map((p) => (
               <li key={p.id} class="border-b border-line">
