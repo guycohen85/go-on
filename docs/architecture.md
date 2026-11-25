@@ -39,8 +39,11 @@ Bottom navigation: בית, חוזרים לחיים, היומן, כלים, מעק
 - Station worksheets: `worksheet:station-<n>`, one field per question, keyed by the field id in the station file (keep ids stable).
 - Baseline (`baseline`): `{ start, again }`, each a map of domain text → 0 to 10. `again` is the re-rating in station 11, shown next to `start`.
 - Logs (`log:<id>`): append-only lists (activity, brain training, between stations), shown on the tracking page.
-- Diary: AES-GCM via Web Crypto, key derived from the personal code with PBKDF2. Auto-lock after 5 minutes of inactivity. A forgotten code cannot be recovered (stated clearly in the UI).
-- Backup: export everything to a JSON file (diary stays encrypted inside it); import restores it. Persistent storage requested via `navigator.storage.persist()`.
+- Diary (`src/lib/diary.ts`): stored as `{ v: 1, iter, salt, iv, data }` (base64). Key: PBKDF2-SHA-256, 600,000 iterations, 16-byte random salt → AES-GCM 256, non-extractable, kept in memory only while open; a fresh 12-byte IV on every save. The plaintext is `{ journal, questions, symptoms, plan }`, re-encrypted whole on each change; saves, code changes and deletion run through one queue so no late write uses an old key. The diary is read without the storage timeout, so a slow read never looks like "no diary" (creating one would overwrite it). Locks after 5 minutes without activity in the diary, on leaving the page, and by button. A forgotten code cannot be recovered (stated in the UI).
+- Other keys: `steps:<YYYY-MM-DD>` and `steps:goal` (step counter), `meta:lastBackup`.
+- Backup (`/settings`): one JSON file `{ app: "go-on", version: 1, exportedAt, data: { <key>: <value> } }` with every key except `feedbackQueue`; the diary stays encrypted inside it, the rest is plain. Import checks `app` and `version`, asks once, then replaces everything (clear + setMany). Persistent storage is requested via `navigator.storage.persist()` after the first successful write.
+- Tracking (`/tracking`): the baseline gauge in `auto` mode (first rating = `start`, later = `again`), a weekly habit worksheet, and a read-only history of every `log:*` list and the step counter. Field names come from the log form that writes each list.
+- Toolkit (`/tools`): worksheets; the hard-day card, week plan and conversation prep share their ids with the "חוזרים לחיים" appendix, so answers are the same in both places.
 - A visible notice wherever the user writes: saved only on this device.
 
 ## Feedback

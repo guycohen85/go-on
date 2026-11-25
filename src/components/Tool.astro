@@ -23,6 +23,10 @@ import Sudoku from './tools/Sudoku';
 import Crossword from './tools/Crossword';
 import MeditationPlayer from './tools/MeditationPlayer';
 import Baseline from './tools/Baseline';
+import Diary from './tools/Diary';
+import History from './tools/History';
+import Backup from './tools/Backup';
+import DeleteAll from './tools/DeleteAll';
 
 interface Props {
   type: string;
@@ -36,14 +40,38 @@ const d = data as any;
 const known = [
   'water', 'per-kg', 'ons', 'health-check', 'workout', 'steps', 'activity-timer', 'move-reminder',
   'activity-idea', 'log', 'memory-pairs', 'digit-sequence', 'chunking', 'reaction', 'stroop', 'sudoku',
-  'crossword', 'meditations', 'baseline',
+  'crossword', 'meditations', 'baseline', 'practices', 'diary', 'history', 'backup', 'delete-all',
 ];
 if (!known.includes(type)) throw new Error(`Unknown tool type "${type}" in content`);
 
+// "meditations": the practice folders from the collection. "practices": a short list written in the section itself.
 const practices =
   type === 'meditations'
     ? (await getCollection('meditations')).sort((a, b) => a.data.order - b.data.order).map((m) => ({ id: m.id, ...m.data }))
-    : [];
+    : type === 'practices'
+      ? (d.practices as { title: string; minutes: string; lines: string[] }[]).map((p, i) => ({
+          id: String(i),
+          folder: '',
+          folderSummary: '',
+          ...p,
+        }))
+      : [];
+// The tracking history names each log's fields as the form that writes it does, unless given here.
+let logs: { id: string; title: string; href: string; fields: { id: string; label: string }[] }[] = [];
+if (type === 'history') {
+  const forms = new Map<string, { id: string; label: string }[]>();
+  for (const s of await getCollection('sections'))
+    for (const t of s.data.tools ?? [])
+      if (t.type === 'log') {
+        const ld = t.data as { id: string; fields: { id: string; label: string }[] };
+        forms.set(ld.id, ld.fields);
+      }
+  logs = (d.logs as { id: string; title: string; href: string; fields?: { id: string; label: string }[] }[]).map((l) => {
+    const fields = l.fields ?? forms.get(l.id);
+    if (!fields) throw new Error(`Tracking history: no log form with id "${l.id}" and no fields given`);
+    return { ...l, fields };
+  });
+}
 // The baseline gauge's domains live with the hub texts, so station 11 re-rates the same list.
 const baseline = type === 'baseline' ? (await getEntry('backToLife', 'hub'))!.data.baseline : null;
 ---
@@ -64,5 +92,9 @@ const baseline = type === 'baseline' ? (await getEntry('backToLife', 'hub'))!.da
 {type === 'stroop' && <Stroop client:only="preact" note={d.note} />}
 {type === 'sudoku' && <Sudoku client:only="preact" />}
 {type === 'crossword' && <Crossword client:visible clues={d.clues} />}
-{type === 'meditations' && <MeditationPlayer client:visible practices={practices} noVoiceText={d.noVoiceText} />}
+{(type === 'meditations' || type === 'practices') && <MeditationPlayer client:visible practices={practices} noVoiceText={d.noVoiceText} />}
+{type === 'diary' && <Diary client:load {...d} />}
+{type === 'history' && <History client:visible logs={logs} steps={d.steps} />}
+{type === 'backup' && <Backup client:visible />}
+{type === 'delete-all' && <DeleteAll client:visible />}
 {baseline && <Baseline client:visible domains={baseline.domains} scale={baseline.scale} scaleDraft={baseline.scaleDraft} mode={d.mode ?? 'start'} />}

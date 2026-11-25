@@ -2,5 +2,5 @@
   { "id": "back-to-life", "order": 1, "title": "חוזרים לחיים", "summary": "תהליך אישי ב‑12 תחנות", "icon": "path", "color": "green", "href": "/back-to-life" },
   { "id": "diary", "order": 2, "title": "היומן שלי", "summary": "נעול בקוד אישי", "icon": "notebook", "color": "purple", "href": "/diary" },
   { "id": "tools", "order": 3, "title": "ערכת כלים", "summary": "לימים מורכבים", "icon": "toolbox", "color": "orange", "href": "/tools" },
-  { "id": "tracking", "order": 4, "title": "מעקב", "summary": "אנרגיה, שינה ומצב רוח", "icon": "chart-line-up", "color": "blue", "href": "/tracking" }
+  { "id": "tracking", "order": 4, "title": "מעקב", "summary": "ללמוד מה עוזר", "icon": "chart-line-up", "color": "blue", "href": "/tracking" }
 ]
