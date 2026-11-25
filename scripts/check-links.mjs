@@ -22,7 +22,10 @@ for (const file of files) {
     // Under a base path, a link without it points outside the site.
     const inBase = !base || link.startsWith(`${base}/`);
     const target = join(dist, decodeURIComponent(base ? link.slice(base.length) : link));
-    const ok = inBase && existsSync(target) && (statSync(target).isFile() || existsSync(join(target, 'index.html')));
+    const ok =
+      inBase &&
+      ((existsSync(target) && (statSync(target).isFile() || existsSync(join(target, 'index.html')))) ||
+        existsSync(`${target.replace(/\/$/, '')}.html`));
     if (!ok) {
       broken++;
       console.log(`${file.replace(dist, '')}: ${link}`);

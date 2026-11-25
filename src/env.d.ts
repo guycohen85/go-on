@@ -1,3 +1,4 @@
+/// <reference types="@unplugin-pwa/core/vanillajs" />
 interface ImportMetaEnv {
   /** Web3Forms access key for anonymous feedback. Public by design. */
   readonly PUBLIC_WEB3FORMS_KEY?: string;

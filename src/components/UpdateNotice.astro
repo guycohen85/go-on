@@ -1,0 +1,35 @@
+---
+// Registers the service worker (offline support) and, when a new version is ready, offers to
+// update. The page never reloads by itself, so nothing the user is typing is lost.
+---
+<div
+  id="update-notice"
+  hidden
+  role="status"
+  class="fixed inset-x-0 bottom-[calc(72px+env(safe-area-inset-bottom,0px))] z-40 px-5"
+>
+  <div class="mx-auto flex max-w-page flex-wrap items-center justify-between gap-3 rounded-card border-2 border-ink bg-paper p-3">
+    <p class="font-semibold">יש גרסה חדשה של האפליקציה.</p>
+    <div class="flex gap-2">
+      <button type="button" data-update class="inline-flex min-h-11 items-center rounded-tile bg-go px-4 font-bold text-white transition-colors hover:bg-go-hover">
+        עדכון
+      </button>
+      <button type="button" data-later class="inline-flex min-h-11 items-center rounded-tile border-2 border-line bg-paper px-4 font-semibold text-ink transition-colors hover:border-ink">
+        אחר כך
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { registerSW } from 'virtual:pwa-register';
+
+  const notice = document.getElementById('update-notice')!;
+  const update = registerSW({
+    onNeedRefresh() {
+      notice.hidden = false;
+    },
+  });
+  notice.querySelector('[data-update]')!.addEventListener('click', () => void update());
+  notice.querySelector('[data-later]')!.addEventListener('click', () => (notice.hidden = true));
+</script>

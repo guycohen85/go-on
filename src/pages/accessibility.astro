@@ -1,7 +1,11 @@
 ---
+import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import Placeholder from '../components/Placeholder.astro';
+import TopicPage from '../components/TopicPage.astro';
+
+// The page's title and summary live in the intro section of src/content/topics/accessibility/.
+const page = (await getEntry('sections', 'accessibility/00-intro'))!.data;
 ---
-<Base title="הצהרת נגישות">
-  <Placeholder title="הצהרת נגישות" milestone={6} />
+<Base title={page.title}>
+  <TopicPage topic="accessibility" title={page.title!} summary={page.summary} icon={page.icon} color="blue" feedback={false} accordion={false} />
 </Base>

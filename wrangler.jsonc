@@ -1,0 +1,12 @@
+// Cloudflare Workers with static assets: serves dist/ as is, no Worker code.
+// Deploy: npm run build && npx wrangler deploy (in the client's Cloudflare account).
+{
+  "name": "go-on",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // /tools is served from tools.html; /tools/ redirects to /tools.
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}
