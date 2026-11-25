@@ -1,7 +1,11 @@
 ---
+import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import TopicPage from '../components/TopicPage.astro';
+
+// The page's title and summary live in the intro section of src/content/topics/settings/.
+const page = (await getEntry('sections', 'settings/00-intro'))!.data;
 ---
-<Base title="גיבוי והגדרות">
-  <TopicPage topic="settings" title="גיבוי והגדרות" summary="שמירה, שחזור ומחיקה של המידע בטלפון" icon="gear" color="blue" feedback={false} />
+<Base title={page.title}>
+  <TopicPage topic="settings" title={page.title!} summary={page.summary} icon={page.icon} color="blue" feedback={false} />
 </Base>

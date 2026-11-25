@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { update } from 'idb-keyval';
+import { get, update } from 'idb-keyval';
 import { load } from '../../lib/store';
 import { url } from '../../lib/url';
 import { note } from './ui';
@@ -40,9 +40,20 @@ export default function Baseline({ domains, scale, scaleDraft, mode = 'start' }:
         start: { ...s.start, ...cur.start },
         again: { ...s.again, ...cur.again },
       }));
+    if (mode === 'auto') {
+      // The round depends on what is stored, so wait for the real value: a timed-out read that
+      // looks empty would choose "start" and overwrite the first ratings.
+      (get(KEY) as Promise<Stored | undefined>)
+        .catch(() => undefined)
+        .then((s = {}) => {
+          mergeIn(s);
+          setRound(Object.keys(s.start ?? {}).length > 0 ? 'again' : 'start');
+          setReady(true);
+        });
+      return;
+    }
     load<Stored>(KEY, {}, mergeIn).then((s) => {
       mergeIn(s);
-      if (mode === 'auto') setRound(Object.keys(s.start ?? {}).length > 0 ? 'again' : 'start');
       setReady(true);
     });
   }, [mode]);

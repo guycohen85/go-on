@@ -14,19 +14,75 @@ interface Props {
   symptomsNote: string;
   emergencyTitle: string;
   emergency: string;
-  safety: { breath: string; high: string; fever: string };
+  /** `breathKind`: the symptom name that triggers the `breath` note from severity 7. */
+  safety: { breathKind: string; breath: string; high: string; fever: string };
   planNote: string;
+  /** Titles, field labels and button names, from the content file. */
+  labels: Labels;
 }
+
+export const LABEL_KEYS = [
+  'tabJournal',
+  'tabQuestions',
+  'tabSymptoms',
+  'tabSummary',
+  'tabSettings',
+  'createTitle',
+  'lockTitle',
+  'createText',
+  'lockText',
+  'code',
+  'codeAgain',
+  'openButton',
+  'lockButton',
+  'journalTitle',
+  'mood',
+  'energy',
+  'journalText',
+  'tomorrow',
+  'journalSave',
+  'journalList',
+  'journalEmpty',
+  'questionsTitle',
+  'questionTo',
+  'questionPriority',
+  'questionText',
+  'questionAdd',
+  'questionsList',
+  'questionsEmpty',
+  'symptomsTitle',
+  'symptomKind',
+  'symptomSeverity',
+  'symptomTemp',
+  'symptomStart',
+  'symptomBefore',
+  'symptomRelief',
+  'symptomSave',
+  'symptomsList',
+  'symptomsEmpty',
+  'summaryTitle',
+  'summaryDays',
+  'summaryCreate',
+  'summaryHint',
+  'planTitle',
+  'planContact',
+  'planPhone',
+  'planFever',
+  'planFeverPlaceholder',
+  'planUrgent',
+  'planSave',
+] as const;
+export type Labels = Record<(typeof LABEL_KEYS)[number], string>;
 
 type Phase = 'loading' | 'unsupported' | 'error' | 'new' | 'locked' | 'open';
 type Tab = 'journal' | 'questions' | 'symptoms' | 'summary' | 'settings';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'journal', label: 'יומן' },
-  { id: 'questions', label: 'שאלות לרופא' },
-  { id: 'symptoms', label: 'תופעות בזמן אמת' },
-  { id: 'summary', label: 'סיכום לביקור' },
-  { id: 'settings', label: 'הגדרות' },
+const TABS: { id: Tab; key: keyof Labels }[] = [
+  { id: 'journal', key: 'tabJournal' },
+  { id: 'questions', key: 'tabQuestions' },
+  { id: 'symptoms', key: 'tabSymptoms' },
+  { id: 'summary', key: 'tabSummary' },
+  { id: 'settings', key: 'tabSettings' },
 ];
 
 const LOCK_AFTER_MS = 5 * 60 * 1000;
@@ -84,7 +140,11 @@ export default function Diary(props: Props) {
     const timer = setInterval(check, 10_000);
     const onVisible = () => document.visibilityState === 'visible' && check();
     document.addEventListener('visibilitychange', onVisible);
+    // Leaving the page locks it, so Back (restored from the back-forward cache) never shows it open.
+    const onHide = () => lock();
+    window.addEventListener('pagehide', onHide);
     return () => {
+      window.removeEventListener('pagehide', onHide);
       events.forEach((e) => el?.removeEventListener(e, touch));
       clearInterval(timer);
       document.removeEventListener('visibilitychange', onVisible);
@@ -162,7 +222,20 @@ export default function Diary(props: Props) {
       </div>
     );
   if (phase === 'new' || phase === 'locked')
-    return <LockScreen key={phase} isNew={phase === 'new'} message={lockMsg} onOpen={opened} onExisting={() => setPhase('locked')} />;
+    return (
+      <LockScreen
+        key={phase}
+        isNew={phase === 'new'}
+        message={lockMsg}
+        labels={props.labels}
+        run={enqueue}
+        onOpen={opened}
+        onExisting={(message) => {
+          setLockMsg(message);
+          setPhase('locked');
+        }}
+      />
+    );
 
   const d = data!;
   return (
@@ -173,11 +246,11 @@ export default function Diary(props: Props) {
           <p class="text-small text-ink-2">ננעל אוטומטית לאחר 5 דקות ללא פעילות ביומן.</p>
         </div>
         <button type="button" class={secondary} onClick={() => lock('היומן נעול.')}>
-          נעילת היומן
+          {props.labels.lockButton}
         </button>
       </div>
 
-      <Tabs tab={tab} onTab={setTab} />
+      <Tabs tab={tab} onTab={setTab} labels={props.labels} />
 
       <div role="tabpanel" id={`diary-panel-${tab}`} aria-labelledby={`diary-tab-${tab}`} class="mt-4">
         {tab === 'journal' && <Journal {...props} data={d} change={change} />}
@@ -206,13 +279,18 @@ type Change = (update: (d: DiaryData) => DiaryData, done?: string) => Promise<bo
 function LockScreen({
   isNew,
   message,
+  labels,
+  run,
   onOpen,
   onExisting,
 }: {
   isNew: boolean;
   message: string;
+  labels: Labels;
+  /** The diary's save queue: open and create wait for any save still running (e.g. right after locking). */
+  run: <T>(task: () => Promise<T>) => Promise<T>;
   onOpen: (s: Session, d: DiaryData) => void;
-  onExisting: () => void;
+  onExisting: (message: string) => void;
 }) {
   const [code, setCode] = useState('');
   const [again, setAgain] = useState('');
@@ -231,18 +309,15 @@ function LockScreen({
     try {
       if (isNew) {
         // Another tab may have created a diary meanwhile: never overwrite one.
-        if (await diary.exists()) {
-          setMsg('כבר יש יומן בטלפון הזה. הזינו את הקוד שלו כדי לפתוח.');
-          setCode('');
-          setAgain('');
-          onExisting();
+        const s = await run(async () => ((await diary.exists()) ? 'exists' : diary.create(code)));
+        if (s === 'exists') {
+          onExisting('כבר יש יומן בטלפון הזה. הזינו את הקוד שלו כדי לפתוח.');
           return;
         }
-        const s = await diary.create(code);
         if (!s) return setMsg('לא הצלחנו לשמור. ייתכן שהדפדפן חוסם שמירה (למשל בגלישה בסתר).');
         onOpen(s, diary.blankDiary());
       } else {
-        const r = await diary.open(code);
+        const r = await run(() => diary.open(code));
         if (!r) {
           setMsg('הקוד אינו נכון או שהנתונים אינם ניתנים לפתיחה.');
           return;
@@ -256,15 +331,15 @@ function LockScreen({
 
   return (
     <form class="mt-4 rounded-card bg-sky p-4" onSubmit={submit}>
-      <h2 class="font-display text-card font-medium">{isNew ? 'יצירת יומן פרטי' : 'היומן נעול'}</h2>
+      <h2 class="font-display text-card font-medium">{isNew ? labels.createTitle : labels.lockTitle}</h2>
       <p class="mt-1">
-        {isNew ? 'בחר/י קוד אישי. התוכן יוצפן במכשיר הזה.' : 'הזינו את הקוד האישי כדי לפתוח.'}
+        {isNew ? labels.createText : labels.lockText}
       </p>
       {isNew && <p class={note}>חשוב לזכור את הקוד: אם הוא נשכח, אין דרך לפתוח את היומן.</p>}
       <div class="mt-3 grid gap-4 md:grid-cols-2">
         <div>
           <label for="diary-code" class={label}>
-            קוד אישי
+            {labels.code}
           </label>
           <input
             id="diary-code"
@@ -280,7 +355,7 @@ function LockScreen({
         {isNew && (
           <div>
             <label for="diary-code-again" class={label}>
-              אימות הקוד
+              {labels.codeAgain}
             </label>
             <input
               id="diary-code-again"
@@ -294,7 +369,7 @@ function LockScreen({
         )}
       </div>
       <button type="submit" class={`${primary} mt-4`} disabled={busy}>
-        {isNew ? 'יצירת יומן פרטי' : 'פתיחת היומן'}
+        {isNew ? labels.createTitle : labels.openButton}
       </button>
       <p class={note} role="status" aria-live="polite">
         {msg}
@@ -304,7 +379,7 @@ function LockScreen({
 }
 
 /** Tabs with arrow-key navigation. In RTL, ArrowLeft moves forward. */
-function Tabs({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
+function Tabs({ tab, onTab, labels }: { tab: Tab; onTab: (t: Tab) => void; labels: Labels }) {
   const list = useRef<HTMLDivElement>(null);
   function key(e: KeyboardEvent) {
     const i = TABS.findIndex((t) => t.id === tab);
@@ -329,14 +404,14 @@ function Tabs({ tab, onTab }: { tab: Tab; onTab: (t: Tab) => void }) {
             role="tab"
             id={`diary-tab-${t.id}`}
             aria-selected={selected}
-            aria-controls={`diary-panel-${t.id}`}
+            aria-controls={selected ? `diary-panel-${t.id}` : undefined}
             tabIndex={selected ? 0 : -1}
             class={`min-h-11 rounded-pill border-2 px-4 font-semibold transition-colors ${
               selected ? 'border-ink bg-ink text-white' : 'border-line bg-paper text-ink hover:border-ink'
             }`}
             onClick={() => onTab(t.id)}
           >
-            {t.label}
+            {labels[t.key]}
           </button>
         );
       })}
@@ -438,7 +513,7 @@ function More({ shown, total, onMore }: { shown: number; total: number; onMore: 
   );
 }
 
-function Journal({ moods, data, change }: Props & { data: DiaryData; change: Change }) {
+function Journal({ labels, moods, data, change }: Props & { data: DiaryData; change: Change }) {
   const [v, setV] = useState({ mood: '', energy: '', text: '', tomorrow: '' });
   const [shown, setShown] = useState(PAGE);
   const set = (k: keyof typeof v) => (x: string) => setV((c) => ({ ...c, [k]: k === 'energy' ? score(x) : x }));
@@ -453,23 +528,23 @@ function Journal({ moods, data, change }: Props & { data: DiaryData; change: Cha
 
   return (
     <div class="grid gap-6">
-      <Card title="כתיבה אישית">
+      <Card title={labels.journalTitle}>
         <form onSubmit={submit}>
           <div class="mt-3 grid gap-4 md:grid-cols-2">
-            <Select id="j-mood" text="איך אני מרגיש/ה היום?" options={moods} value={v.mood} onChange={set('mood')} />
-            <Field id="j-energy" text="אנרגיה (0 עד 10)" type="score" value={v.energy} onInput={set('energy')} />
-            <Field id="j-text" text="מה עובר עליי?" type="textarea" value={v.text} onInput={set('text')} />
-            <Field id="j-tomorrow" text="מה אני רוצה לקחת למחר?" value={v.tomorrow} onInput={set('tomorrow')} />
+            <Select id="j-mood" text={labels.mood} options={moods} value={v.mood} onChange={set('mood')} />
+            <Field id="j-energy" text={labels.energy} type="score" value={v.energy} onInput={set('energy')} />
+            <Field id="j-text" text={labels.journalText} type="textarea" value={v.text} onInput={set('text')} />
+            <Field id="j-tomorrow" text={labels.tomorrow} value={v.tomorrow} onInput={set('tomorrow')} />
           </div>
           <button type="submit" class={`${primary} mt-4`}>
-            שמירת הרשומה
+            {labels.journalSave}
           </button>
         </form>
       </Card>
       <section>
-        <h2 class="font-display text-card font-medium">רשומות אחרונות</h2>
+        <h2 class="font-display text-card font-medium">{labels.journalList}</h2>
         {data.journal.length === 0 ? (
-          <p class="mt-2 text-ink-2">עדיין אין רשומות.</p>
+          <p class="mt-2 text-ink-2">{labels.journalEmpty}</p>
         ) : (
           <ul class="mt-2">
             {data.journal.slice(0, shown).map((x) => (
@@ -497,7 +572,7 @@ function Journal({ moods, data, change }: Props & { data: DiaryData; change: Cha
   );
 }
 
-function Questions({ recipients, priorities, data, change }: Props & { data: DiaryData; change: Change }) {
+function Questions({ labels, recipients, priorities, data, change }: Props & { data: DiaryData; change: Change }) {
   const [v, setV] = useState({ to: '', priority: '', text: '' });
   const set = (k: keyof typeof v) => (x: string) => setV((c) => ({ ...c, [k]: x }));
 
@@ -512,22 +587,22 @@ function Questions({ recipients, priorities, data, change }: Props & { data: Dia
 
   return (
     <div class="grid gap-6">
-      <Card title="שאלות לרופא / לצוות המטפל">
+      <Card title={labels.questionsTitle}>
         <form onSubmit={submit}>
           <div class="mt-3 grid gap-4 md:grid-cols-2">
-            <Select id="q-to" text="למי השאלה?" options={recipients} value={v.to} onChange={set('to')} />
-            <Select id="q-priority" text="עדיפות" options={priorities} value={v.priority} onChange={set('priority')} />
-            <Field id="q-text" text="השאלה שלי" type="textarea" value={v.text} onInput={set('text')} />
+            <Select id="q-to" text={labels.questionTo} options={recipients} value={v.to} onChange={set('to')} />
+            <Select id="q-priority" text={labels.questionPriority} options={priorities} value={v.priority} onChange={set('priority')} />
+            <Field id="q-text" text={labels.questionText} type="textarea" value={v.text} onInput={set('text')} />
           </div>
           <button type="submit" class={`${primary} mt-4`}>
-            הוספת שאלה
+            {labels.questionAdd}
           </button>
         </form>
       </Card>
       <section>
-        <h2 class="font-display text-card font-medium">השאלות שלי</h2>
+        <h2 class="font-display text-card font-medium">{labels.questionsList}</h2>
         {data.questions.length === 0 ? (
-          <p class="mt-2 text-ink-2">אין שאלות שמורות.</p>
+          <p class="mt-2 text-ink-2">{labels.questionsEmpty}</p>
         ) : (
           <ul class="mt-2">
             {data.questions.map((q) => (
@@ -554,13 +629,13 @@ function Questions({ recipients, priorities, data, change }: Props & { data: Dia
 }
 
 function safetyFor(s: Symptom, safety: Props['safety']): string {
-  if (s.kind === 'קוצר נשימה' && s.severity >= 7) return safety.breath;
+  if (s.kind === safety.breathKind && s.severity >= 7) return safety.breath;
   if (s.severity >= 9) return safety.high;
   if (s.temp.trim()) return safety.fever;
   return '';
 }
 
-function Symptoms({ symptoms, quick, symptomsNote, emergencyTitle, emergency, safety, data, change }: Props & { data: DiaryData; change: Change }) {
+function Symptoms({ labels, symptoms, quick, symptomsNote, emergencyTitle, emergency, safety, data, change }: Props & { data: DiaryData; change: Change }) {
   const blank = { kind: '', severity: '', temp: '', start: '', before: '', relief: '' };
   const [v, setV] = useState(blank);
   const [msg, setMsg] = useState('');
@@ -589,7 +664,7 @@ function Symptoms({ symptoms, quick, symptomsNote, emergencyTitle, emergency, sa
 
   return (
     <div class="grid gap-6">
-      <Card title="רישום תופעה בזמן אמת">
+      <Card title={labels.symptomsTitle}>
         <p class="mt-1">{symptomsNote}</p>
         <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="בחירה מהירה של תופעה">
           {quick.map((q) => (
@@ -608,10 +683,10 @@ function Symptoms({ symptoms, quick, symptomsNote, emergencyTitle, emergency, sa
         </div>
         <form onSubmit={submit}>
           <div class="mt-4 grid gap-4 md:grid-cols-2">
-            <Select id="s-kind" text="תופעה" options={symptoms} value={v.kind} onChange={set('kind')} />
+            <Select id="s-kind" text={labels.symptomKind} options={symptoms} value={v.kind} onChange={set('kind')} />
             <div>
               <label for="s-severity" class={label}>
-                עוצמה (0 עד 10)
+                {labels.symptomSeverity}
               </label>
               <input
                 id="s-severity"
@@ -624,13 +699,13 @@ function Symptoms({ symptoms, quick, symptomsNote, emergencyTitle, emergency, sa
                 onInput={(e) => set('severity')(e.currentTarget.value)}
               />
             </div>
-            <Field id="s-temp" text="טמפרטורה (אם רלוונטי)" placeholder="°C" value={v.temp} onInput={set('temp')} />
-            <Field id="s-start" text="מתי התחיל?" type="datetime-local" value={v.start} onInput={set('start')} />
-            <Field id="s-before" text="מה קרה לפני / מה עשיתי?" type="textarea" value={v.before} onInput={set('before')} />
-            <Field id="s-relief" text="מה עשיתי להקלה והאם עזר?" type="textarea" value={v.relief} onInput={set('relief')} />
+            <Field id="s-temp" text={labels.symptomTemp} placeholder="°C" value={v.temp} onInput={set('temp')} />
+            <Field id="s-start" text={labels.symptomStart} type="datetime-local" value={v.start} onInput={set('start')} />
+            <Field id="s-before" text={labels.symptomBefore} type="textarea" value={v.before} onInput={set('before')} />
+            <Field id="s-relief" text={labels.symptomRelief} type="textarea" value={v.relief} onInput={set('relief')} />
           </div>
           <button type="submit" class={`${primary} mt-4`}>
-            שמירת התופעה עכשיו
+            {labels.symptomSave}
           </button>
           <p class={note} role="status" aria-live="polite">
             {msg}
@@ -646,9 +721,9 @@ function Symptoms({ symptoms, quick, symptomsNote, emergencyTitle, emergency, sa
         <b>{emergencyTitle}</b> {emergency}
       </p>
       <section>
-        <h2 class="font-display text-card font-medium">ציר הזמן של התופעות</h2>
+        <h2 class="font-display text-card font-medium">{labels.symptomsList}</h2>
         {data.symptoms.length === 0 ? (
-          <p class="mt-2 text-ink-2">עדיין לא נרשמו תופעות.</p>
+          <p class="mt-2 text-ink-2">{labels.symptomsEmpty}</p>
         ) : (
           <ul class="mt-2">
             {data.symptoms.slice(0, shown).map((x) => (
@@ -709,7 +784,7 @@ function buildSummary(data: DiaryData, days: number): string {
   return t;
 }
 
-function Summary({ summaryDays, data }: Props & { data: DiaryData }) {
+function Summary({ labels, summaryDays, data }: Props & { data: DiaryData }) {
   const [days, setDays] = useState(String(summaryDays[1] ?? summaryDays[0] ?? 14));
   const [text, setText] = useState('');
   const [msg, setMsg] = useState('');
@@ -726,11 +801,11 @@ function Summary({ summaryDays, data }: Props & { data: DiaryData }) {
   }
 
   return (
-    <Card title="סיכום לביקור רפואי">
+    <Card title={labels.summaryTitle}>
       <div class="mt-3 flex flex-wrap items-end gap-3">
         <div>
           <label for="v-days" class={label}>
-            כמה ימים לכלול?
+            {labels.summaryDays}
           </label>
           <select id="v-days" class={input} value={days} onChange={(e) => setDays(e.currentTarget.value)}>
             {summaryDays.map((n) => (
@@ -741,7 +816,7 @@ function Summary({ summaryDays, data }: Props & { data: DiaryData }) {
           </select>
         </div>
         <button type="button" class={primary} onClick={() => (setText(buildSummary(data, Number(days))), setMsg(''))}>
-          יצירת סיכום
+          {labels.summaryCreate}
         </button>
       </div>
       {text ? (
@@ -755,7 +830,7 @@ function Summary({ summaryDays, data }: Props & { data: DiaryData }) {
           </button>
         </>
       ) : (
-        <p class="mt-3 text-ink-2">לחצו על "יצירת סיכום".</p>
+        <p class="mt-3 text-ink-2">{labels.summaryHint}</p>
       )}
       <p class={note} role="status" aria-live="polite">
         {msg}
@@ -765,6 +840,7 @@ function Summary({ summaryDays, data }: Props & { data: DiaryData }) {
 }
 
 function Settings({
+  labels,
   planNote,
   data,
   change,
@@ -797,17 +873,17 @@ function Settings({
 
   return (
     <div class="grid gap-6">
-      <Card title="תוכנית אישית מהצוות">
+      <Card title={labels.planTitle}>
         <p class="mt-1">{planNote}</p>
         <form onSubmit={(e) => (e.preventDefault(), change((d) => ({ ...d, plan }), 'ההנחיות נשמרו ביומן המוצפן'))}>
           <div class="mt-3 grid gap-4 md:grid-cols-2">
-            <Field id="p-contact" text="למי מתקשרים בשעות הפעילות?" value={plan.contact} onInput={set('contact')} />
-            <Field id="p-phone" text="טלפון" value={plan.phone} onInput={set('phone')} />
-            <Field id="p-fever" text="הנחיית חום שקיבלתי מהצוות" placeholder="למשל: מעל ___ מעלות לפנות ל..." value={plan.fever} onInput={set('fever')} />
-            <Field id="p-urgent" text="הנחיות נוספות שמחייבות פנייה" type="textarea" value={plan.urgent} onInput={set('urgent')} />
+            <Field id="p-contact" text={labels.planContact} value={plan.contact} onInput={set('contact')} />
+            <Field id="p-phone" text={labels.planPhone} value={plan.phone} onInput={set('phone')} />
+            <Field id="p-fever" text={labels.planFever} placeholder={labels.planFeverPlaceholder} value={plan.fever} onInput={set('fever')} />
+            <Field id="p-urgent" text={labels.planUrgent} type="textarea" value={plan.urgent} onInput={set('urgent')} />
           </div>
           <button type="submit" class={`${primary} mt-4`}>
-            שמירת ההנחיות
+            {labels.planSave}
           </button>
         </form>
       </Card>

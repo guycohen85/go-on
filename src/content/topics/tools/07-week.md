@@ -5,8 +5,8 @@ icon: calendar-check
 worksheet:
   id: back-to-life-week
   fields:
-    - { id: important, label: דבר אחד שחשוב לי השבוע }
-    - { id: rest, label: איך אשבץ מנוחה / התאוששות? }
+    - { id: important, label: דבר אחד שחשוב לי }
+    - { id: rest, label: מנוחה/התאוששות }
     - { id: good, label: משהו שעושה לי טוב }
-    - { id: small, label: מהי הגרסה המצומצמת שלי ליום עם פחות אנרגיה? }
+    - { id: small, label: הגרסה המצומצמת שלי }
 ---

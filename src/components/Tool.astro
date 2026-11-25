@@ -23,7 +23,7 @@ import Sudoku from './tools/Sudoku';
 import Crossword from './tools/Crossword';
 import MeditationPlayer from './tools/MeditationPlayer';
 import Baseline from './tools/Baseline';
-import Diary from './tools/Diary';
+import Diary, { LABEL_KEYS } from './tools/Diary';
 import History from './tools/History';
 import Backup from './tools/Backup';
 import DeleteAll from './tools/DeleteAll';
@@ -56,6 +56,10 @@ const practices =
           ...p,
         }))
       : [];
+if (type === 'diary') {
+  const missing = LABEL_KEYS.filter((k) => typeof d.labels?.[k] !== 'string');
+  if (missing.length) throw new Error(`Diary content is missing labels: ${missing.join(', ')}`);
+}
 // The tracking history names each log's fields as the form that writes it does, unless given here.
 let logs: { id: string; title: string; href: string; fields: { id: string; label: string }[] }[] = [];
 if (type === 'history') {

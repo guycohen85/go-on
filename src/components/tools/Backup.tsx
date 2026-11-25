@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
-import { entries, clear, setMany } from 'idb-keyval';
+import { entries, keys, setMany, delMany } from 'idb-keyval';
 import { load, save } from '../../lib/store';
 import { label, primary, secondary, note, today } from './ui';
 
@@ -76,8 +76,12 @@ export default function Backup() {
   async function restore() {
     if (!pending) return;
     try {
-      await clear();
-      await setMany(Object.entries(pending.data));
+      // Write the backup first (one transaction), then remove what it does not have. If writing
+      // fails, nothing on the phone was lost. This phone's own keys (SKIP) are kept.
+      const incoming = Object.entries(pending.data).filter(([k]) => !SKIP.has(k));
+      await setMany(incoming);
+      const keep = new Set(incoming.map(([k]) => k));
+      await delMany((await keys()).filter((k) => typeof k !== 'string' || (!keep.has(k) && !SKIP.has(k))));
       void navigator.storage?.persist?.();
       setPending(null);
       setLast(String(pending.data[LAST] ?? ''));
